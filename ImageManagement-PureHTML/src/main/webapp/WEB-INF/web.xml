@@ -29,6 +29,6 @@
  	</filter>
  	<filter-mapping> 
     	<filter-name>Checker</filter-name> 
-    	<url-pattern></url-pattern>
+    	<url-pattern>/GoToHomePage</url-pattern>
  	</filter-mapping> 
 </web-app>

@@ -83,13 +83,13 @@ public class CheckLogin extends HttpServlet {
 			return;
 		}
 		String path = getServletContext().getContextPath();
+		
 		if (u == null) {
 			//Stay in login page, a login error occurred, credentials not correct
 			path = getServletContext().getContextPath() + "/index.html";
 		} else {
 			request.getSession().setAttribute("user", u);
-			//NOW GO TO HOME PAGE: path = ...
-			//path = getServletContext().getContextPath() + "/Home.html";
+			path = path + "/GoToHomePage";
 		}
 		
 		response.sendRedirect(path);
