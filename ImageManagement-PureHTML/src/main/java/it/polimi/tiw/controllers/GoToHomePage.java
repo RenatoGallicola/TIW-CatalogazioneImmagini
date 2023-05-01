@@ -89,16 +89,15 @@ public class GoToHomePage extends HttpServlet {
 			topCategories = cService.findTopCategoriesAndSubtrees();
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Error in retrieving products from the database");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
 			return;
 		}
 		// Redirect to the Home page and add missions to the parameters
 		String path = "/WEB-INF/Home.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("allproducts", allCategories);
-		ctx.setVariable("topproducts", topCategories);
+		ctx.setVariable("allCategories", allCategories);
+		ctx.setVariable("topCategories", topCategories);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 	
