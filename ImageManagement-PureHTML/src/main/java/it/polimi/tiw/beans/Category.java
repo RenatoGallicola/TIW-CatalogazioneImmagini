@@ -40,6 +40,10 @@ public class Category {
 		this.isTop = isTop;
 	}
 	
+	public List<Category> getSubCategories(){
+		return subCategories;
+	}
+	
 	public void addSubCategory(Category part) {
 		subCategories.add(part);
 	}

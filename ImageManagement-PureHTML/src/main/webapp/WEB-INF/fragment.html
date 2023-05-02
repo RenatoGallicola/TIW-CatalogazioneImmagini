@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+ 	<!--/*  declare parameterized fragment called "list" */-->
+	<div th:fragment="list(category)">
+
+		<div th:if="${category.isTop == true}" th:class="(${category.isTop}) ? 'top'">
+
+			<span th:text="${category.id + ' ' + category.name}"></span>
+
+		</div>
+
+		<ul th:if="${not #lists.isEmpty(category.subCategories)}" class="subCategory">
+
+			<li th:each="child : ${category.subCategories}"> 
+			
+				<span th:text="${child.id + ' ' + child.name}"></span>
+
+				<!--/* "this" indicates that the fragment to be used is in this file */-->
+				<!--/* the product parameter to use in the fragment is the current child */-->
+				<ul th:replace="this :: list(${child})"></ul>
+			</li>
+			
+		</ul>
+
+	</div>
+
+</body>
+
+</html>

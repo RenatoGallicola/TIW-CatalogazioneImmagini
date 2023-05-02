@@ -93,7 +93,7 @@ public class GoToHomePage extends HttpServlet {
 			return;
 		}
 		// Redirect to the Home page and add missions to the parameters
-		String path = "/WEB-INF/Home.html";
+		String path = "/WEB-INF/home.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("allCategories", allCategories);

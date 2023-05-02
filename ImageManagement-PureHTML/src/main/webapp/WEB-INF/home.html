@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Home - Image Management</title>
+	<link rel="stylesheet" href="../css/home.css" th:href="@{/css/home.css}" />
+</head>
+
+<body>
+
+	<ul>
+		<!--/* the product parameter to use in the fragment is the current child */-->
+		<li th:each="category : ${topCategories}"
+			th:insert="@{WEB-INF/fragment.html} :: list (category)">
+		</li>
+	</ul>
+	
+</body>
+</html>
