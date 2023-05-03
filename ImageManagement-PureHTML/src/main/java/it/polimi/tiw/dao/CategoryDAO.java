@@ -96,7 +96,7 @@ public class CategoryDAO {
 						else
 						{
 							//Check now if there's a free slot for a child under this father
-							numSubCategories = isThereSapce(idFather);
+							numSubCategories = isThereSpace(idFather);
 							if(numSubCategories>=0)
 							{
 								//Check now if the category name is valid:
@@ -175,7 +175,7 @@ public class CategoryDAO {
 	}
 	
 	
-	private int isThereSapce(int idFather) throws SQLException {
+	private int isThereSpace(int idFather) throws SQLException {
 		
 		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");)
 		{
