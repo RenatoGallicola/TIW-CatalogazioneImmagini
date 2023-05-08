@@ -8,11 +8,13 @@ public class Category {
 	private int id;
 	private String name;
 	private Boolean isTop;
+	private Boolean selected;
 	private List<Category> subCategories;
 	
 	public Category()
 	{
 		this.isTop =false;
+		this.selected = false;
 		subCategories = new ArrayList<Category>();
 	}
 	
@@ -48,6 +50,16 @@ public class Category {
 		subCategories.add(part);
 	}
 	
+	public Boolean getSelected() {
+		return selected;
+	}
+
+
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
+
+
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", isTop=" + isTop + "]";
