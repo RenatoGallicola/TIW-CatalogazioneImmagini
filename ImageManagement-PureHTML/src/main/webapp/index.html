@@ -4,7 +4,8 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Login - Image Management</title>
-	<link rel="stylesheet" href="css/login.css">
+	<link rel="stylesheet" href="css/login_dark.css" >
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
 
 <body>
@@ -12,19 +13,28 @@
 		
 		<h1>Login</h1>
 		
+		<div class="divider"></div>
+		
 		<form action="CheckLogin" method="POST">
 			<div class="text">
-				<input type="text" name="username" required>
-				<span></span>
-				<label>Username</label> 
+				<div class="user">
+					<input type="text" name="username" required>
+					<img src="images/user.png"/>
+					<span></span>
+					<label>Username</label>
+				</div> 
 			</div>
+			<div class="fieldDivider"></div>
 			<div class="text">
-				<input type="password" name="password" required>
-				<span></span>
-				<label>Password</label>
+				<div class="password">
+					<input type="password" name="password" required>
+					<img src="images/password.png"/>
+					<span></span>
+					<label>Password</label>
+				</div> 
 			</div>
 			
-			<input type="submit" value="Login">
+			<input type="submit" value="LOGIN">
 			
 		</form>
 		

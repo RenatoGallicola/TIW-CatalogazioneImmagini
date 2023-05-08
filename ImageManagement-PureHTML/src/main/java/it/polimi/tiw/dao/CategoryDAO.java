@@ -83,7 +83,7 @@ public class CategoryDAO {
 		
 		try
 		{
-			if(idFather!=-1)
+			if(idFather!=0)
 			{
 				//Check now if father exists:
 				try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");)
@@ -115,6 +115,13 @@ public class CategoryDAO {
 										newstatement.setString(2, cat);
 										
 										newstatement.executeUpdate();
+										
+										String sub_cat_query = "insert into image_management.subcategory values(?,?);";
+										try (PreparedStatement sub_cat_statement = connection.prepareStatement(sub_cat_query);) {
+											sub_cat_statement.setInt(1, idFather);
+											sub_cat_statement.setInt(2, c);
+											sub_cat_statement.executeUpdate();
+										}
 									}
 									
 								}
@@ -177,8 +184,8 @@ public class CategoryDAO {
 	
 	private int isThereSpace(int idFather) throws SQLException {
 		
-		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");)
-		{
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");){
+			pstatement.setInt(1, idFather);
 			try (ResultSet result = pstatement.executeQuery();) {
 				result.next();
 				int numSubCategories = result.getInt("quantity");

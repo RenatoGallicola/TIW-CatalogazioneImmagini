@@ -8,15 +8,21 @@
 
 		<div th:if="${category.isTop == true}" th:class="(${category.isTop}) ? 'top'">
 
-			<span th:text="${category.id + ' ' + category.name}"></span>
+			<label class="categoryId" th:text="${category.id}"></label>
+			<label class="categorySpace"> </label>
+			<label class="categoryName" th:text="${category.name}"></label>
+			<a th:href="@{/GoToHomePage}"><label class="copyLabel">Copy</label></a>
 
 		</div>
 
-		<ul th:if="${not #lists.isEmpty(category.subCategories)}" class="subCategory">
+		<ul th:if="${not #lists.isEmpty(category.subCategories)}">
 
-			<li th:each="child : ${category.subCategories}"> 
+			<li th:each="child : ${category.subCategories}" class="subCategory"> 
 			
-				<span th:text="${child.id + ' ' + child.name}"></span>
+				<label class="categoryId" th:text="${child.id}"></label>
+				<label class="categorySpace"> </label>
+				<label class="categoryName" th:text="${child.name}"></label>
+				<a th:href="@{/GoToHomePage}"><label class="copyLabel">Copy</label></a>
 
 				<!--/* "this" indicates that the fragment to be used is in this file */-->
 				<!--/* the product parameter to use in the fragment is the current child */-->
