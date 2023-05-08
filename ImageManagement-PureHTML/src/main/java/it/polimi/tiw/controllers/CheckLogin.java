@@ -16,20 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 
-/**
- * Servlet implementation class CheckLogin
- */
 @WebServlet("/CheckLogin")
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public CheckLogin() {
         super();
-        // TODO Auto-generated constructor stub
     }
     
     public void init() throws ServletException {
@@ -49,22 +42,11 @@ public class CheckLogin extends HttpServlet {
 		}
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		String usrn = request.getParameter("username");
 		String pwd = request.getParameter("password");
 		
@@ -92,9 +74,7 @@ public class CheckLogin extends HttpServlet {
 			path = path + "/GoToHomePage";
 		}
 		
-		response.sendRedirect(path);
-		
-		
+		response.sendRedirect(path);		
 	}
 	
 	

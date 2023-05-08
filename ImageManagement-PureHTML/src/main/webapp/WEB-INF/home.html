@@ -5,16 +5,57 @@
 	<meta charset="ISO-8859-1">
 	<title>Home - Image Management</title>
 	<link rel="stylesheet" href="../css/home.css" th:href="@{/css/home.css}" />
+	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
 </head>
 
 <body>
-
-	<ul>
-		<!--/* the product parameter to use in the fragment is the current child */-->
-		<li th:each="category : ${topCategories}"
-			th:insert="@{WEB-INF/fragment.html} :: list (category)">
-		</li>
-	</ul>
+	
+	<div class="userInfo">
+		
+		<label th:text="${username}"></label>
+		<a th:href="@{/CheckLogout}">
+			<img src="/ImageManagement-PureHTML/images/user.png"/>
+			<div class="logout">LOGOUT</div>			
+		</a>
+	</div>
+	
+	<div class="pageContent">
+		
+		<div class="categoryForm">
+		
+			<p>Complete the form to create a new category</p>
+			
+			<form action="#" th:action="@{/CreateCategory}" method="POST">
+				
+				<div class="nameField">
+					<input type="text" name="name" required/>
+					<label>Name</label>
+				</div>
+				
+				<div class="categoryField">
+					<select name="categoryId" id="categoryId" required>
+						<option value="" disabled selected>Choose a father category</option>
+						<option value="0">0 - Root</option>
+						<option th:each="c : ${allCategories}" th:value="${c.id} " th:text="${c.id + ' - ' + c.name}"></option>
+					</select>
+					<label>Choose a father category</label>
+				</div>
+				
+				<input type="submit" value="CREATE">
+			
+			</form>
+		</div>
+		
+		<div class="treeDiv">
+			<ul class="categoryTree">
+				<!--/* the product parameter to use in the fragment is the current child */-->
+				<li th:each="category : ${topCategories}"
+					th:insert="@{WEB-INF/fragment.html} :: list (category)">
+				</li>
+				<li><div class="treeFooter"></div></li>
+			</ul>
+		</div>
+	</div>
 	
 </body>
 </html>

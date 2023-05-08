@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -20,22 +21,16 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.Category;
 import it.polimi.tiw.dao.CategoryDAO;
+import it.polimi.tiw.beans.User;
 
-/**
- * Servlet implementation class GoToHomePage
- */
 @WebServlet("/GoToHomePage")
 public class GoToHomePage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
 	private Connection connection = null;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public GoToHomePage() {
         super();
-        // TODO Auto-generated constructor stub
     }
     
     public void init() throws ServletException {
@@ -64,21 +59,11 @@ public class GoToHomePage extends HttpServlet {
 		templateResolver.setSuffix(".html");
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
 		List<Category> allCategories = null;
 		List<Category> topCategories = null;
 		
@@ -92,12 +77,16 @@ public class GoToHomePage extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
 			return;
 		}
+		
+		String username = ((User)((HttpServletRequest)request).getSession().getAttribute("user")).getUser();
+		
 		// Redirect to the Home page and add missions to the parameters
 		String path = "/WEB-INF/home.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("allCategories", allCategories);
 		ctx.setVariable("topCategories", topCategories);
+		ctx.setVariable("username", username);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 	
