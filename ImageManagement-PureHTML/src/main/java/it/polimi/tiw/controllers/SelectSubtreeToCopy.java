@@ -73,7 +73,7 @@ public class SelectSubtreeToCopy extends HttpServlet {
 			try {
 				int_source = Integer.parseInt(id_source);
 
-				if (int_source < 0)
+				if (int_source <= 0)
 					bad_request = true;
 			} catch (NumberFormatException e) {
 				bad_request = true;
