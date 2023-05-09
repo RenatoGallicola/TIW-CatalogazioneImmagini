@@ -76,12 +76,47 @@ public class CreateCategory extends HttpServlet {
 		CategoryDAO cService = new CategoryDAO(connection);
 
 		try {
+			
+			connection.setAutoCommit(false);
 			cService.insertCategory(name, f_id);
-		} catch (Exception e) {
-			e.printStackTrace();
+			connection.commit();
+			
+		} catch (SQLException e) {
+			
+			try {
+				
+				connection.rollback();
+				
+			} catch (SQLException e1) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						"Error in creating the product in the database");
+				return;
+				
+			}
+			finally{
+				try {
+					connection.setAutoCommit(true);
+				} catch (SQLException e1) {
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+							"Error in creating the product in the database");
+					
+					return;
+				}
+			}
+			
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					"Error in creating the product in the database");
 			return;
+		}
+		finally{
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						"Error in creating the product in the database");
+				
+				return;
+			}
 		}
 
 		String ctxpath = getServletContext().getContextPath();
