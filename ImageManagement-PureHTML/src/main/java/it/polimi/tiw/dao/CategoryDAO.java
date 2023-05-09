@@ -189,7 +189,7 @@ public class CategoryDAO {
 		}
 	}
 
-	private int isThereSpace(int idFather) throws SQLException {
+	public int isThereSpace(int idFather) throws SQLException {
 
 		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");) {
 			pstatement.setInt(1, idFather);
@@ -224,6 +224,46 @@ public class CategoryDAO {
 		}catch(SQLException f) {
 			return false;
 		}
+	}
+	
+	public Category getSpecificCategory(int idCategory)
+	{
+		Category c = new Category();
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");) {
+			pstatement.setInt(1, idCategory);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // category doesn't exist
+					return null;
+				
+				result.next();
+				c.setId(idCategory);
+				c.setName(result.getString("name"));
+				return c;
+				
+			}catch(SQLException e) {
+				return null;
+			}
+		}catch(SQLException f) {
+			return null;
+		}
+	}
+	
+	
+	public boolean checkIdDestination(Category cat, int idDestination)
+	{
+		boolean result = true;
+		if(cat.getId()!=idDestination)
+		{
+			List<Category> sub = cat.getSubCategories();
+			
+			for(int i=0; i<sub.size() && result; i++)
+				result = checkIdDestination(sub.get(i), idDestination);
+			
+			return result;
+			
+		}
+		else
+			return false;
 	}
 
 }
