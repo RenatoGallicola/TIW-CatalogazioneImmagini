@@ -37,8 +37,7 @@ public class CategoryDAO {
 		List<Category> categories = new ArrayList<Category>();
 		boolean found_selected = false; // 'true' if the selected category to copy is located in the tree root 
 		
-		try (PreparedStatement pstatement = connection.prepareStatement(
-				"SELECT * FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory)");) {
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory)");) {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
 					Category c = new Category();
@@ -71,10 +70,12 @@ public class CategoryDAO {
 		return categories;
 	}
 
+	// switch_selected : 'true' if the attribute 'cat.selected' should be set to 'true', 'false' otherwise
+	// selected_c : the id of the selected subtree root category to copy. 
+	// 				'-1' if no category has been selected or if the selected category has already been found in an upper level of the tree (according to the value of 'switch selected')
 	public void findSubparts(Category cat, boolean switch_selected, int selected_c) throws SQLException {
 		Category c = null;
-		try (PreparedStatement pstatement = connection.prepareStatement(
-				"SELECT C.id, C.name FROM image_management.subcategory S JOIN image_management.category C on C.id = S.child WHERE S.father = ?");) {
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT C.id, C.name FROM image_management.subcategory S JOIN image_management.category C on C.id = S.child WHERE S.father = ?");) {
 			pstatement.setInt(1, cat.getId());
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
@@ -113,8 +114,7 @@ public class CategoryDAO {
 		try {
 			if (idFather != 0) {
 				// Check now if father exists:
-				try (PreparedStatement pstatement = connection
-						.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");) {
+				try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");) {
 					pstatement.setInt(1, idFather);
 					try (ResultSet result = pstatement.executeQuery();) {
 						if (!result.isBeforeFirst()) // no results, father doesn't exists
@@ -126,8 +126,7 @@ public class CategoryDAO {
 								// Check now if the category name is valid:
 								if (isValidName(cat)) {
 									// Insert now Category "cat":
-									try (PreparedStatement newstatement = connection
-											.prepareStatement("insert into image_management.category values(?,?);");) {
+									try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");) {
 										// Create 'id' for the new category:
 										String s1 = Integer.toString(idFather);
 										String s2 = Integer.toString(numSubCategories + 1);
@@ -140,8 +139,7 @@ public class CategoryDAO {
 										newstatement.executeUpdate();
 
 										String sub_cat_query = "insert into image_management.subcategory values(?,?);";
-										try (PreparedStatement sub_cat_statement = connection
-												.prepareStatement(sub_cat_query);) {
+										try (PreparedStatement sub_cat_statement = connection.prepareStatement(sub_cat_query);) {
 											sub_cat_statement.setInt(1, idFather);
 											sub_cat_statement.setInt(2, c);
 											sub_cat_statement.executeUpdate();
@@ -160,16 +158,14 @@ public class CategoryDAO {
 				int quantity;
 
 				// Check for space in root and insert:
-				try (PreparedStatement pstatement = connection.prepareStatement(
-						"SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");) {
+				try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");) {
 					try (ResultSet result = pstatement.executeQuery();) {
 						result.next();
 						quantity = result.getInt("quantity");
 						if (quantity < 9) {
 							// You can insert in root
 							// Insert now Category "cat":
-							try (PreparedStatement newstatement = connection
-									.prepareStatement("insert into image_management.category values(?,?);");) {
+							try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");) {
 								newstatement.setInt(1, quantity + 1);
 								newstatement.setString(2, cat);
 
@@ -195,8 +191,7 @@ public class CategoryDAO {
 
 	private int isThereSpace(int idFather) throws SQLException {
 
-		try (PreparedStatement pstatement = connection.prepareStatement(
-				"SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");) {
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");) {
 			pstatement.setInt(1, idFather);
 			try (ResultSet result = pstatement.executeQuery();) {
 				result.next();
