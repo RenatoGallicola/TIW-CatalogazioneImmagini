@@ -11,15 +11,13 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 public class CategoryDAO {
-	
+
 	private Connection connection;
-	
-	public CategoryDAO(Connection connection)
-	{
+
+	public CategoryDAO(Connection connection) {
 		this.connection = connection;
 	}
-	
-	
+
 	public List<Category> findAllCategories() throws SQLException {
 		List<Category> categories = new ArrayList<Category>();
 		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category");) {
@@ -34,176 +32,203 @@ public class CategoryDAO {
 		}
 		return categories;
 	}
-	
-	
-	public List<Category> findTopCategoriesAndSubtrees() throws SQLException {
+
+	public List<Category> findTopCategoriesAndSubtrees(int selected_c, boolean switch_selected) throws SQLException {
 		List<Category> categories = new ArrayList<Category>();
-		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory)");) {
+		boolean found_selected = false; // 'true' if the selected category to copy is located in the tree root 
+		
+		try (PreparedStatement pstatement = connection.prepareStatement(
+				"SELECT * FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory)");) {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
 					Category c = new Category();
 					c.setId(result.getInt("id"));
 					c.setName(result.getString("name"));
 					c.setIsTop(true);
+					
+					if(switch_selected && c.getId() == selected_c) { // current category has been selected to be copied
+						c.setSelected(true);
+						found_selected = true;
+					}
+					
 					categories.add(c);
 				}
-				
+
 				for (Category cat : categories) {
-					findSubparts(cat);
+					
+					if(switch_selected && found_selected && cat.getId() == selected_c) // current category is the selected one to copy
+						findSubparts(cat, true, -1);
+					else if (switch_selected && found_selected && cat.getId() != selected_c) // found selected category to copy but it's not the current one
+						findSubparts(cat, false, -1);
+					else if (switch_selected && !found_selected) // selected category to copy not in the tree root
+						findSubparts(cat, true, selected_c);
+					else 
+						findSubparts(cat, false, -1);
+					
 				}
 			}
 		}
 		return categories;
 	}
-	
-	public void findSubparts(Category cat) throws SQLException {
+
+	public void findSubparts(Category cat, boolean switch_selected, int selected_c) throws SQLException {
 		Category c = null;
-		try (PreparedStatement pstatement = connection.prepareStatement("SELECT C.id, C.name FROM image_management.subcategory S JOIN image_management.category C on C.id = S.child WHERE S.father = ?");) 
-		{
+		try (PreparedStatement pstatement = connection.prepareStatement(
+				"SELECT C.id, C.name FROM image_management.subcategory S JOIN image_management.category C on C.id = S.child WHERE S.father = ?");) {
 			pstatement.setInt(1, cat.getId());
 			try (ResultSet result = pstatement.executeQuery();) {
 				while (result.next()) {
 					c = new Category();
 					c.setId(result.getInt("id"));
 					c.setName(result.getString("name"));
-					findSubparts(c);
+					
+					if(switch_selected && selected_c == -1) { // current category is the child of a selected one to copy
+						c.setSelected(true);
+						findSubparts(c, true, -1);
+					}else if(switch_selected && c.getId() == selected_c) { // current category is the selected one to copy
+						c.setSelected(true);
+						findSubparts(c, true, -1);
+					}else if(switch_selected && c.getId() != selected_c) { // current category is not the selected one to copy
+						c.setSelected(false);
+						findSubparts(c, true, selected_c);
+					}else { // no categories should be copied
+						c.setSelected(false);
+						findSubparts(c, false, -1);
+					}
+					
 					cat.addSubCategory(c);
 				}
 			}
 		}
 
 	}
-	
-	//Check if idFather is an integer in the servlet, and if the user wants to create a root node idFather = -1;
-	public void insertCategory(String cat, int idFather) throws SQLException
-	{
+
+	// Check if idFather is an integer in the servlet, and if the user wants to
+	// create a root node idFather = -1;
+	public void insertCategory(String cat, int idFather) throws SQLException {
 		int numSubCategories;
-		
+
 		connection.setAutoCommit(false);
-		
-		try
-		{
-			if(idFather!=0)
-			{
-				//Check now if father exists:
-				try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");)
-				{
+
+		try {
+			if (idFather != 0) {
+				// Check now if father exists:
+				try (PreparedStatement pstatement = connection
+						.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");) {
 					pstatement.setInt(1, idFather);
-					try (ResultSet result = pstatement.executeQuery();) 
-					{
-						if (!result.isBeforeFirst()) // no results, father doesn't exists 
+					try (ResultSet result = pstatement.executeQuery();) {
+						if (!result.isBeforeFirst()) // no results, father doesn't exists
 							throw new SQLException();
-						else
-						{
-							//Check now if there's a free slot for a child under this father
+						else {
+							// Check now if there's a free slot for a child under this father
 							numSubCategories = isThereSpace(idFather);
-							if(numSubCategories>=0)
-							{
-								//Check now if the category name is valid:
-								if(isValidName(cat))
-								{
-									//Insert now Category "cat":
-									try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");)
-									{
-										//Create 'id' for the new category:
+							if (numSubCategories >= 0) {
+								// Check now if the category name is valid:
+								if (isValidName(cat)) {
+									// Insert now Category "cat":
+									try (PreparedStatement newstatement = connection
+											.prepareStatement("insert into image_management.category values(?,?);");) {
+										// Create 'id' for the new category:
 										String s1 = Integer.toString(idFather);
-								        String s2 = Integer.toString(numSubCategories + 1);
-								        String s = s1 + s2;
-								        int c = Integer.parseInt(s);
-										
+										String s2 = Integer.toString(numSubCategories + 1);
+										String s = s1 + s2;
+										int c = Integer.parseInt(s);
+
 										newstatement.setInt(1, c);
 										newstatement.setString(2, cat);
-										
+
 										newstatement.executeUpdate();
-										
+
 										String sub_cat_query = "insert into image_management.subcategory values(?,?);";
-										try (PreparedStatement sub_cat_statement = connection.prepareStatement(sub_cat_query);) {
+										try (PreparedStatement sub_cat_statement = connection
+												.prepareStatement(sub_cat_query);) {
 											sub_cat_statement.setInt(1, idFather);
 											sub_cat_statement.setInt(2, c);
 											sub_cat_statement.executeUpdate();
 										}
 									}
-									
-								}
-								else
+
+								} else
 									throw new SQLException();
-								
-							}
-							else
+
+							} else
 								throw new SQLException();
 						}
 					}
-				}		
-			}
-			else
-			{
+				}
+			} else {
 				int quantity;
-				
-				//Check for space in root and insert:
-				try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");)
-				{
-					try (ResultSet result = pstatement.executeQuery();)
-					{
+
+				// Check for space in root and insert:
+				try (PreparedStatement pstatement = connection.prepareStatement(
+						"SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");) {
+					try (ResultSet result = pstatement.executeQuery();) {
 						result.next();
 						quantity = result.getInt("quantity");
-						if(quantity < 9)
-						{
-							//You can insert in root
-							//Insert now Category "cat":
-							try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");)
-							{
+						if (quantity < 9) {
+							// You can insert in root
+							// Insert now Category "cat":
+							try (PreparedStatement newstatement = connection
+									.prepareStatement("insert into image_management.category values(?,?);");) {
 								newstatement.setInt(1, quantity + 1);
 								newstatement.setString(2, cat);
-								
+
 								newstatement.executeUpdate();
 							}
-						}
-						else
-						{
-							//You can NOT insert in root
+						} else {
+							// You can NOT insert in root
 							throw new SQLException();
 						}
 					}
 				}
 			}
-			
+
 			connection.commit();
-			
-		}
-		catch(SQLException e)
-		{
+
+		} catch (SQLException e) {
 			connection.rollback();
 			throw e;
-		}
-		finally
-		{
+		} finally {
 			connection.setAutoCommit(true);
 		}
 	}
-	
-	
+
 	private int isThereSpace(int idFather) throws SQLException {
-		
-		try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");){
+
+		try (PreparedStatement pstatement = connection.prepareStatement(
+				"SELECT count(*) as quantity FROM image_management.subcategory S WHERE S.father = ?;");) {
 			pstatement.setInt(1, idFather);
 			try (ResultSet result = pstatement.executeQuery();) {
 				result.next();
 				int numSubCategories = result.getInt("quantity");
-				
-				if(numSubCategories < 9)
+
+				if (numSubCategories < 9)
 					return numSubCategories;
 				else
 					return -1;
 			}
 		}
 	}
-	
-	private boolean isValidName(String name)
-	{
-		 Pattern p = Pattern.compile("^[ A-Za-z]+$");
-	     Matcher m = p.matcher(name);
-	     return (m.matches());
+
+	private boolean isValidName(String name) {
+		Pattern p = Pattern.compile("^[ A-Za-z]+$");
+		Matcher m = p.matcher(name);
+		return (m.matches());
 	}
-	
+
+	public boolean validCategory(int c_id) {
+		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category WHERE id = ?");) {
+			pstatement.setInt(1, c_id);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // category doesn't exist
+					return false;
+				return true;
+			}catch(SQLException e) {
+				return false;
+			}
+		}catch(SQLException f) {
+			return false;
+		}
+	}
 
 }

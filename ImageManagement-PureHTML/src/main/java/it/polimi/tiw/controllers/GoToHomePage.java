@@ -71,7 +71,7 @@ public class GoToHomePage extends HttpServlet {
 		
 		try {
 			allCategories = cService.findAllCategories();
-			topCategories = cService.findTopCategoriesAndSubtrees();
+			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
@@ -80,13 +80,14 @@ public class GoToHomePage extends HttpServlet {
 		
 		String username = ((User)((HttpServletRequest)request).getSession().getAttribute("user")).getUser();
 		
-		// Redirect to the Home page and add missions to the parameters
+		// Redirect to the Home page and add categories to the parameters
 		String path = "/WEB-INF/home.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("allCategories", allCategories);
 		ctx.setVariable("topCategories", topCategories);
 		ctx.setVariable("username", username);
+		ctx.setVariable("showCopy", true); // show 'copy' button beside each category 
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 	
