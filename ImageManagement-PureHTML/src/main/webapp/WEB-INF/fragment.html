@@ -7,11 +7,12 @@
 	<div th:fragment="list(category)">
 
 		<div th:if="${category.isTop == true}" th:class="(${category.isTop}) ? 'top'">
-
-			<label class="categoryId" th:text="${category.id}"></label>
+		
+			<label th:class="${category.selected} ? 'selectedCategoryId' : 'categoryId'" th:text="${category.id}"></label>
 			<label class="categorySpace"> </label>
-			<label class="categoryName" th:text="${category.name}"></label>
-			<a th:href="@{/GoToHomePage}"><label class="copyLabel">Copy</label></a>
+			<label th:class="${category.selected} ? 'selectedCategoryName' : 'categoryName'" th:text="${category.name}"></label>
+			<a th:if="${showCopy}" th:href="@{/SelectSubtreeToCopy(idSource=${category.id})}"><label class="copyLabel">Copy</label></a>
+			<a th:if="${!showCopy && !category.selected}" th:href="@{/CopySubTree(idSource=${idSource},idDestination=${category.id})}"><label class="copyLabel">Copy here</label></a>
 
 		</div>
 
@@ -19,14 +20,14 @@
 
 			<li th:each="child : ${category.subCategories}" class="subCategory"> 
 			
-				<label class="categoryId" th:text="${child.id}"></label>
+				<label th:class="${child.selected} ? 'selectedCategoryId' : 'categoryId'" th:text="${child.id}"></label>
 				<label class="categorySpace"> </label>
-				<label class="categoryName" th:text="${child.name}"></label>
-				<a th:href="@{/GoToHomePage}"><label class="copyLabel">Copy</label></a>
-
-				<!--/* "this" indicates that the fragment to be used is in this file */-->
-				<!--/* the product parameter to use in the fragment is the current child */-->
+				<label th:class="${child.selected} ? 'selectedCategoryName' : 'categoryName'" th:text="${child.name}"></label>
+				<a th:if="${showCopy}" th:href="@{/SelectSubtreeToCopy(idSource=${child.id})}"><label class="copyLabel">Copy</label></a>
+				<a th:if="${!showCopy && !child.selected}" th:href="@{/CopySubTree(idSource=${idSource},idDestination=${child.id})}"><label class="copyLabel">Copy here</label></a>
+			
 				<ul th:replace="this :: list(${child})"></ul>
+				
 			</li>
 			
 		</ul>
