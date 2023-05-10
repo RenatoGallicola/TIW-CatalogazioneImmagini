@@ -105,7 +105,7 @@ public class CategoryDAO {
 	}
 
 	// Check if idFather is an integer in the servlet, and if the user wants to
-	// create a root node idFather = -1;
+	// create a root node idFather = 0;
 	public void insertCategory(String cat, int idFather) throws SQLException {
 		int numSubCategories;
 		
@@ -153,27 +153,35 @@ public class CategoryDAO {
 				}
 			}
 		} else {
+			
 			int quantity;
+			
+			if(isValidName(cat))
+			{
+				// Check for space in root and insert:
+				try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");) {
+					try (ResultSet result = pstatement.executeQuery();) {
+						result.next();
+						quantity = result.getInt("quantity");
+						if (quantity < 9) {
+							// You can insert in root
+							// Insert now Category "cat":
+							try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");) {
+								newstatement.setInt(1, quantity + 1);
+								newstatement.setString(2, cat);
 
-			// Check for space in root and insert:
-			try (PreparedStatement pstatement = connection.prepareStatement("SELECT count(*) as quantity FROM image_management.category WHERE id NOT IN (select child FROM image_management.subcategory);");) {
-				try (ResultSet result = pstatement.executeQuery();) {
-					result.next();
-					quantity = result.getInt("quantity");
-					if (quantity < 9) {
-						// You can insert in root
-						// Insert now Category "cat":
-						try (PreparedStatement newstatement = connection.prepareStatement("insert into image_management.category values(?,?);");) {
-							newstatement.setInt(1, quantity + 1);
-							newstatement.setString(2, cat);
-
-							newstatement.executeUpdate();
+								newstatement.executeUpdate();
+							}
+						} else {
+							// You can NOT insert in root
+							throw new SQLException();
 						}
-					} else {
-						// You can NOT insert in root
-						throw new SQLException();
 					}
 				}
+			}
+			else
+			{
+				throw new SQLException();
 			}
 		}		
 	}
@@ -198,7 +206,8 @@ public class CategoryDAO {
 	private boolean isValidName(String name) {
 		Pattern p = Pattern.compile("^[ A-Za-z]+$");
 		Matcher m = p.matcher(name);
-		return (m.matches());
+		return (m.matches() && !(name.isBlank()));
+		
 	}
 
 	public boolean validCategory(int c_id) {
@@ -257,8 +266,42 @@ public class CategoryDAO {
 	}
 	
 	
-	public void copySubTree() {
+	public void copySubTree(Category cat, int idDestination) throws SQLException
+	{
+		try
+		{
+			connection.setAutoCommit(false);
+			
+			realCopySubTree(cat, idDestination);
+			
+			connection.commit();
+		}
+		catch(SQLException e)
+		{
+			connection.rollback();
+		}
+		finally
+		{
+			connection.setAutoCommit(true);
+		}
+	}
+	
+	
+	private void realCopySubTree(Category cat, int idDestination) throws SQLException
+	{
+		List<Category> sub = cat.getSubCategories();
+		int numChildsOfDestination = isThereSpace(idDestination); //Get number of childs under destination
 		
+		//Calculate the id of the category I have to insert (needed for next copy)
+		int idOfNewCategory = Integer.parseInt(Integer.toString(idDestination) + Integer.toString(numChildsOfDestination + 1));
+		
+		insertCategory(cat.getName(), idDestination);
+		
+		for(Category c: sub)
+		{
+			//Build id destination of cat now:
+			realCopySubTree(c, idOfNewCategory);
+		}
 	}
 
 }

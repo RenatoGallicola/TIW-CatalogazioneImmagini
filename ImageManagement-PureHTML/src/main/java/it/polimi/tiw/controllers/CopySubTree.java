@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -14,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.Category;
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CategoryDAO;
 
 /**
@@ -101,10 +104,39 @@ public class CopySubTree extends HttpServlet {
 						if(cService.checkIdDestination(cSource, destination))
 						{
 							//Now copy, insert into the DB the new nodes:
-							
-							
+							try
+							{
+								cService.copySubTree(cSource, destination);
+								
+							}catch(SQLException e)
+							{
+								response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error Copying subTree");
+								return;
+							}							
 							
 							//redirect to HomePage:
+							List<Category> allCategories = null;
+							List<Category> topCategories = null;
+							String username = ((User)((HttpServletRequest)request).getSession().getAttribute("user")).getUser();
+							
+							try {
+								allCategories = cService.findAllCategories();
+								topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
+							} catch (Exception e) {
+								e.printStackTrace();
+								response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
+								return;
+							}
+							
+							// Redirect to the Home page and add categories to the parameters
+							String path = "/WEB-INF/home.html";
+							ServletContext servletContext = getServletContext();
+							final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+							ctx.setVariable("allCategories", allCategories);
+							ctx.setVariable("topCategories", topCategories);
+							ctx.setVariable("username", username);
+							ctx.setVariable("showCopy", true); // show 'copy' button beside each category 
+							templateEngine.process(path, ctx, response.getWriter());
 							
 						}
 						else

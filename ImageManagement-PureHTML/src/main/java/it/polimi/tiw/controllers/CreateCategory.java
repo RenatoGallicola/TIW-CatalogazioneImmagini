@@ -89,7 +89,7 @@ public class CreateCategory extends HttpServlet {
 				
 			} catch (SQLException e1) {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-						"Error in creating the product in the database");
+						"Error in creating the category in the database");
 				return;
 				
 			}
@@ -98,14 +98,14 @@ public class CreateCategory extends HttpServlet {
 					connection.setAutoCommit(true);
 				} catch (SQLException e1) {
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-							"Error in creating the product in the database");
+							"Error in creating the category in the database");
 					
 					return;
 				}
 			}
 			
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Error in creating the product in the database");
+					"Error in creating the category in the database");
 			return;
 		}
 		finally{
@@ -113,7 +113,7 @@ public class CreateCategory extends HttpServlet {
 				connection.setAutoCommit(true);
 			} catch (SQLException e) {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-						"Error in creating the product in the database");
+						"Error in creating the category in the database");
 				
 				return;
 			}
