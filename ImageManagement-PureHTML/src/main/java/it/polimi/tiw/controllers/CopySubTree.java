@@ -87,7 +87,7 @@ public class CopySubTree extends HttpServlet {
 		}
 		
 		//Check if id_soruce and id_destination are valid
-		if(cService.validCategory(source) && cService.validCategory(destination))
+		if(cService.validCategory(source) && (cService.validCategory(destination) || destination == 0)) //destination = 0 if destination is root
 		{
 			Category cSource = cService.getSpecificCategory(source);
 			
