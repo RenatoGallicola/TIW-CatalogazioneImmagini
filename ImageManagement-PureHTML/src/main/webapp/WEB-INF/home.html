@@ -4,7 +4,7 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Home - Image Management</title>
-	<link rel="stylesheet" href="../css/home.css" th:href="@{/css/home.css}" />
+	<link rel="stylesheet" href="../css/home.css" th:href="@{/css/home.css}"/>
 	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
 </head>
 
@@ -17,6 +17,7 @@
 			<img src="/ImageManagement-PureHTML/images/user.png"/>
 			<div class="logout">LOGOUT</div>			
 		</a>
+		
 	</div>
 	
 	<div class="pageContent">
@@ -38,7 +39,6 @@
 						<option value="0">0 - Root</option>
 						<option th:each="c : ${allCategories}" th:value="${c.id} " th:text="${c.id + ' - ' + c.name}"></option>
 					</select>
-					<label>Choose the parent category</label>
 				</div>
 				
 				<input type="submit" value="CREATE">
@@ -51,6 +51,11 @@
 				<!--/* the product parameter to use in the fragment is the current child */-->
 				<li th:each="category : ${topCategories}"
 					th:insert="@{WEB-INF/fragment.html} :: list (category)">
+				</li>
+				<li th:if="${!showCopy && topCategories.size()<9}" >
+					<a th:href="@{/CopySubTree(idSource=${idSource},idDestination=0)}">
+						<label class="copyLabel">Copy here</label>
+					</a>
 				</li>
 				<li><div class="treeFooter"></div></li>
 			</ul>

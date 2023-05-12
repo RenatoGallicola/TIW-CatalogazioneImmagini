@@ -48,7 +48,7 @@ body{
 	font-family: 'Oswald', sans-serif;
 	color: rgba(255 233 198 / 100%);
 	position: relative;
-	right: -23px;
+	right: -16px;
 	bottom: -28px;
 	overflow: hidden;
 	letter-spacing: 1px;
@@ -57,12 +57,12 @@ body{
 }
 
 a:hover {
-	width: 210px;
+	width: 190px;
 }
 
 a:hover .logout{
-	font-size: 24px;
-	bottom: -16px;
+	font-size: 22px;
+	bottom: -18px;
 	opacity: 1;
 	transition: 0.5s;
 }

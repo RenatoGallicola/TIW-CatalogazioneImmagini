@@ -20,16 +20,41 @@ public class CategoryDAO {
 
 	public List<Category> findAllCategories() throws SQLException {
 		List<Category> categories = new ArrayList<Category>();
-		try (PreparedStatement pstatement = connection.prepareStatement("SELECT * FROM image_management.category");) {
-			try (ResultSet result = pstatement.executeQuery();) {
+		PreparedStatement pstatement = null;
+		String query = "SELECT * FROM image_management.category";
+		
+		try {
+			pstatement = connection.prepareStatement(query);
+			ResultSet result = null;
+			try {
+				result = pstatement.executeQuery();
 				while (result.next()) {
 					Category c = new Category();
 					c.setId(result.getInt("id"));
 					c.setName(result.getString("name"));
 					categories.add(c);
 				}
+			} catch (SQLException er) {
+				// ...
+				return null;
+			} finally {
+				try {
+					result.close();
+				} catch (Exception er2) {
+					// ...
+				}
+			}
+		}catch (SQLException ep) {
+			// ...
+			return null;
+		} finally {
+			try {
+				pstatement.close();
+			} catch (Exception ep2) {
+				// ...
 			}
 		}
+		
 		return categories;
 	}
 

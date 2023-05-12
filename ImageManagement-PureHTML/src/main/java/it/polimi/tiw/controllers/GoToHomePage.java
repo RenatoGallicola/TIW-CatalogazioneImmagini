@@ -42,7 +42,6 @@ public class GoToHomePage extends HttpServlet {
 			String password = context.getInitParameter("dbPassword");
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
@@ -72,7 +71,7 @@ public class GoToHomePage extends HttpServlet {
 		try {
 			allCategories = cService.findAllCategories();
 			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
 			return;
@@ -101,5 +100,4 @@ public class GoToHomePage extends HttpServlet {
 			}
 		}
 	}
-
 }

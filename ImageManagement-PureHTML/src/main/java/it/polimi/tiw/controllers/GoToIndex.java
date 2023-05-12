@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,17 +18,13 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import it.polimi.tiw.beans.Category;
-import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.CategoryDAO;
-
-@WebServlet("/SelectSubtreeToCopy")
-public class SelectSubtreeToCopy extends HttpServlet {
+@WebServlet("/GoToIndex")
+public class GoToIndex extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Connection connection = null;
 	private TemplateEngine templateEngine;
+	private Connection connection = null;
 
-	public SelectSubtreeToCopy() {
+	public GoToIndex() {
 		super();
 	}
 
@@ -59,58 +54,10 @@ public class SelectSubtreeToCopy extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String id_source = request.getParameter("idSource");
-		Boolean bad_request = false;
-		int int_source = -1;
-
-		List<Category> allCategories = null;
-		List<Category> topCategories = null;
-
-		if (id_source == null)
-			bad_request = true;
-		else {
-			try {
-				int_source = Integer.parseInt(id_source);
-
-				if (int_source <= 0)
-					bad_request = true;
-			} catch (NumberFormatException e) {
-				bad_request = true;
-			}
-		}
-
-		if (bad_request) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
-			return;
-		}
-
-		CategoryDAO cService = new CategoryDAO(connection);
-
-		if (cService.validCategory(int_source)) {
-			try {
-				allCategories = cService.findAllCategories();
-				topCategories = cService.findTopCategoriesAndSubtrees(int_source, true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in deleting the product in the database");
-				return;
-			}
-		} else {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Category does not exist in the database");
-			return;
-		}
-
-		String username = ((User) ((HttpServletRequest) request).getSession().getAttribute("user")).getUser();
-
-		// Redirect to the HomePage and add categories to the parameters
-		String path = "/WEB-INF/home.html";
+		String path = "/WEB-INF/index.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("allCategories", allCategories);
-		ctx.setVariable("topCategories", topCategories);
-		ctx.setVariable("username", username);
-		ctx.setVariable("showCopy", false); // show 'copy here' button beside certain categories only
-		ctx.setVariable("idSource", int_source); // id of the subtree root to copy
+		ctx.setVariable("loginError", false); // login page should not show errors when loaded for the first time
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

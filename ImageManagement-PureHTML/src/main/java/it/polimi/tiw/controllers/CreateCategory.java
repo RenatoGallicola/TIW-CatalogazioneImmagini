@@ -33,7 +33,6 @@ public class CreateCategory extends HttpServlet {
 			String password = context.getInitParameter("dbPassword");
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
@@ -41,16 +40,13 @@ public class CreateCategory extends HttpServlet {
 			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
-
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = null;
 		int f_id = -1;
 		boolean badRequest = false;
@@ -75,15 +71,10 @@ public class CreateCategory extends HttpServlet {
 
 		CategoryDAO cService = new CategoryDAO(connection);
 
-		try 
-		{
+		try {
 			cService.insertCategory(name, f_id);
-			
-		} 
-		catch (SQLException e) 
-		{
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"Error in creating the category in the database");
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in creating the category in the database");
 			return;
 		}
 

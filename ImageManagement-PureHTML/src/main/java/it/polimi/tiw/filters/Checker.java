@@ -19,6 +19,9 @@ public class Checker implements Filter {
     public Checker() {
         super();
     }
+    
+    public void init(FilterConfig fConfig) throws ServletException {
+	}
 
 	public void destroy() {
 	}
@@ -26,7 +29,7 @@ public class Checker implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		String loginpath = req.getServletContext().getContextPath() + "/index.html";
+		String loginpath = req.getServletContext().getContextPath();
 		
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
@@ -37,8 +40,4 @@ public class Checker implements Filter {
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}
-
-	public void init(FilterConfig fConfig) throws ServletException {
-	}
-
 }
