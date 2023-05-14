@@ -60,7 +60,8 @@ public class SelectSubtreeToCopy extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id_source = request.getParameter("idSource");
-		Boolean bad_request = false;
+		String error_message = null;
+		Boolean bad_request = false, error = false;
 		int int_source = -1;
 
 		List<Category> allCategories = null;
@@ -80,7 +81,10 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		}
 
 		if (bad_request) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
+			error_message = "The category id format is invalid";
+			String path = getServletContext().getContextPath() + "/GoToErrorPage";
+			request.getSession().setAttribute("error", error);
+			response.sendRedirect(path);
 			return;
 		}
 
@@ -89,14 +93,27 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		if (cService.validCategory(int_source)) {
 			try {
 				allCategories = cService.findAllCategories();
-				topCategories = cService.findTopCategoriesAndSubtrees(int_source, true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in deleting the product in the database");
-				return;
+			} catch (SQLException e1) {
+				error = true;
+				error_message = "An error occurred while retrieving the categories from the database";
+			}
+			if(!error) {
+				try {
+					topCategories = cService.findTopCategoriesAndSubtrees(int_source, true);
+				} catch (SQLException e2) {
+					error = true;
+					error_message = "An error occurred while searching for the categories to copy";
+				}
 			}
 		} else {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Category does not exist in the database");
+			error = true;
+			error_message = "The chosen category is non-existent";
+		}
+		
+		if(error) {
+			String path = getServletContext().getContextPath() + "/GoToErrorPage";
+			request.getSession().setAttribute("error", error_message);
+			response.sendRedirect(path);
 			return;
 		}
 

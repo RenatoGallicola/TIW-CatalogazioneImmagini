@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter("/Checker")
-public class Checker implements Filter {
+@WebFilter("/UserChecker")
+public class UserChecker implements Filter {
        
-    public Checker() {
+    public UserChecker() {
         super();
     }
     

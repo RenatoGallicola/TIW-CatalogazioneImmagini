@@ -13,11 +13,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+
 import it.polimi.tiw.dao.CategoryDAO;
 
 @WebServlet("/CreateCategory")
 public class CreateCategory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private TemplateEngine templateEngine;
 	private Connection connection = null;
 
 	public CreateCategory() {
@@ -40,6 +45,13 @@ public class CreateCategory extends HttpServlet {
 			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
+
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,35 +61,55 @@ public class CreateCategory extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = null;
 		int f_id = -1;
-		boolean badRequest = false;
-
+		boolean badRequest = false, name_error = false, category_error = false;
+		String error_message = null;
+		
 		try {
-
 			name = request.getParameter("name");
-			f_id = Integer.parseInt(request.getParameter("categoryId"));
-
-			if (name.isEmpty() || f_id < 0) {
+			if(name.isEmpty() || name.isBlank()) {
 				badRequest = true;
-			}
-
-		} catch (NullPointerException | NumberFormatException e) {
+				name_error = true;
+				error_message = "No name entered for the new category";
+			}				
+		} catch (NullPointerException e) {
 			badRequest = true;
+			name_error = true;
+			error_message = "No name entered for the new category";
+		}
+		
+		if (!badRequest) {
+			try {
+				f_id = Integer.parseInt(request.getParameter("categoryId"));
+				if (f_id < 0) {
+					badRequest = true;
+					category_error = true;
+					error_message = "Invalid parent category";
+				}
+			} catch (NullPointerException | NumberFormatException e) {
+				badRequest = true;
+				category_error = true;
+				error_message = "Parent category either invalid or not entered";
+			}
 		}
 
-		if (badRequest) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or incorrect parameters");
-			return;
+		if(!badRequest) {
+			CategoryDAO cService = new CategoryDAO(connection);
+			try {
+				cService.insertCategory(name, f_id);
+			} catch (SQLException e) {
+				badRequest = true;
+				name_error = true;
+				category_error = true;
+				error_message = "Either entered name is in an invalid format or the selected parent is unavailable";
+			}
 		}
 
-		CategoryDAO cService = new CategoryDAO(connection);
-
-		try {
-			cService.insertCategory(name, f_id);
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in creating the category in the database");
-			return;
+		if(badRequest) {
+			request.getSession().setAttribute("error_message", error_message);
+			request.getSession().setAttribute("name_error", name_error);
+			request.getSession().setAttribute("category_error", category_error);
 		}
-
+		
 		String ctxpath = getServletContext().getContextPath();
 		String path = ctxpath + "/GoToHomePage";
 		response.sendRedirect(path);

@@ -27,13 +27,19 @@
 			<p>Complete the form to create a new category</p>
 			
 			<form action="#" th:action="@{/CreateCategory}" method="POST">
+			
+				<div th:if="${name_error || category_error}" th:class="error_div">
+					<label class="error_symbol">&#x26A0</label>
+					<span></span>
+					<label class="error_label" th:text="${error_message}"></label>
+				</div>
 				
-				<div class="nameField">
+				<div th:class="${name_error!=null && name_error} ? 'nameFieldError' : 'nameField'">
 					<input type="text" name="name" required/>
 					<label>Name</label>
 				</div>
 				
-				<div class="categoryField">
+				<div th:class="${category_error!=null && category_error} ? 'categoryFieldError' : 'categoryField'">
 					<select name="categoryId" id="categoryId" required>
 						<option value="" disabled selected>Choose the parent category</option>
 						<option value="0">0 - Root</option>
@@ -48,16 +54,29 @@
 		
 		<div class="treeDiv">
 			<ul class="categoryTree">
-				<!--/* the product parameter to use in the fragment is the current child */-->
+				
+				<li th:if="${!showCopy}" >
+					<a th:href="@{/GoToHomePage}">
+						<label class="cancelLabel">Cancel</label>
+					</a>
+				</li>
+				
+				<li th:if="${!showCopy}" class="cancelLi">
+					<div class="cancelDiv"></span>
+				</li>
+				
 				<li th:each="category : ${topCategories}"
 					th:insert="@{WEB-INF/fragment.html} :: list (category)">
 				</li>
-				<li th:if="${!showCopy && topCategories.size()<9}" >
+				
+				<li th:if="${!showCopy && #lists.size(topCategories)<9}" >
 					<a th:href="@{/CopySubTree(idSource=${idSource},idDestination=0)}">
 						<label class="copyLabel">Copy here</label>
 					</a>
 				</li>
+				
 				<li><div class="treeFooter"></div></li>
+				
 			</ul>
 		</div>
 	</div>

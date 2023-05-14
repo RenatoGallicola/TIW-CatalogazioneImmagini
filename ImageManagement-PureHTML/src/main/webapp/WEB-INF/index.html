@@ -15,6 +15,12 @@
 		
 		<div class="divider"></div>
 		
+		<div th:if="${loginError}" th:class="error_div">
+			<label class="error_symbol">&#x26A0</label>
+			<span></span>
+			<label class="error_label">Incorrect username or password</label>
+		</div>
+		
 		<form action="CheckLogin" method="POST">
 			<div th:class="${loginError} ? 'text_error' : 'text'">
 				<div th:class="${loginError} ? 'user_error' : 'user'">
@@ -30,7 +36,7 @@
 			<div th:class="${loginError} ? 'text_error' : 'text'">
 				<div th:class="${loginError} ? 'password_error' : 'password'">
 					<input type="password" name="password" required>
-					<img src="images/password.png"/>
+					<img th:class="${loginError} ? 'img_error'" src="images/password.png"/>
 					<span th:class="${loginError} ? 'span_error'"></span>
 					<label th:class="${loginError} ? 'label_error'">Password</label>
 				</div> 

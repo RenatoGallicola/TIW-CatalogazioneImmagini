@@ -15,7 +15,7 @@ public class UserDAO {
 		this.con = connection;
 	}
 
-	public User checkCredentials(String usrn, String pwd) {
+	public User checkCredentials(String usrn, String pwd) throws SQLException{
 		String query = "SELECT  username, password FROM user  WHERE username = ? AND password =?";
 		PreparedStatement pstatement = null;
 		try {
@@ -34,25 +34,11 @@ public class UserDAO {
 					user.setUser(result.getString("username"));
 					return user;
 				}
-			} catch (SQLException er) {
-				// ...
-				return null;
 			} finally {
-				try {
-					result.close();
-				} catch (Exception er2) {
-					// ...
-				}
+				result.close();
 			}
-		} catch (SQLException ep) {
-			// ...
-			return null;
 		} finally {
-			try {
-				pstatement.close();
-			} catch (Exception ep2) {
-				// ...
-			}
+			pstatement.close();
 		}
 	}
 }

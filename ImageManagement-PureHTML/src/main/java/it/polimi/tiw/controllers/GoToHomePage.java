@@ -59,21 +59,37 @@ public class GoToHomePage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Category> allCategories = null;
 		List<Category> topCategories = null;
+		String error_message = null;
+		Boolean error = false;
 		
 		CategoryDAO cService = new CategoryDAO(connection);
 		
 		try {
 			allCategories = cService.findAllCategories();
-			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
+		} catch (SQLException e1) {
+			error = true;
+			error_message = "An error occurred while retrieving the categories from the database";
+		}
+		if(!error) {
+			try {
+				topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
+			} catch (SQLException e2) {
+				error = true;
+				error_message = "An error occurred while building the category tree";
+			}
+		}
+		
+		if(error) {
+			
+			request.getSession().removeAttribute("error_message");
+			request.getSession().removeAttribute("name_error");
+			request.getSession().removeAttribute("category_error");
+			
+			String path = getServletContext().getContextPath() + "/GoToErrorPage";
+			request.getSession().setAttribute("error", error_message);
+			response.sendRedirect(path);			
 			return;
 		}
 		
@@ -86,8 +102,32 @@ public class GoToHomePage extends HttpServlet {
 		ctx.setVariable("allCategories", allCategories);
 		ctx.setVariable("topCategories", topCategories);
 		ctx.setVariable("username", username);
-		ctx.setVariable("showCopy", true); // show 'copy' button beside each category 
+		ctx.setVariable("showCopy", true); // show 'copy' button beside each category
+		
+		if(request.getSession().getAttribute("error_message") != null)
+			ctx.setVariable("error_message", request.getSession().getAttribute("error_message"));
+		else
+			ctx.setVariable("error_message", null);
+		
+		if(request.getSession().getAttribute("name_error") != null)
+			ctx.setVariable("name_error", request.getSession().getAttribute("name_error"));
+		else
+			ctx.setVariable("name_error", false);
+		
+		if(request.getSession().getAttribute("category_error") != null)
+			ctx.setVariable("category_error", request.getSession().getAttribute("category_error"));
+		else
+			ctx.setVariable("category_error", false);
+		
 		templateEngine.process(path, ctx, response.getWriter());
+		
+		request.getSession().removeAttribute("error_message");
+		request.getSession().removeAttribute("name_error");
+		request.getSession().removeAttribute("category_error");
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 	
 	@Override
