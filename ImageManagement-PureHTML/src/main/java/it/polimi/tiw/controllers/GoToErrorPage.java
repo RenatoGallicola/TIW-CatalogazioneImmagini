@@ -56,7 +56,6 @@ public class GoToErrorPage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//String error = (String)request.getSession().getAttribute("error");
 		String error = (String)request.getAttribute("error");
 		
 		String path = "/WEB-INF/error.html";
@@ -64,8 +63,6 @@ public class GoToErrorPage extends HttpServlet {
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("error_text", error);
 		templateEngine.process(path, ctx, response.getWriter());
-		
-		//request.getSession().removeAttribute("error");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

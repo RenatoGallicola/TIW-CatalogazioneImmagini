@@ -23,7 +23,6 @@ import it.polimi.tiw.dao.CategoryDAO;
 @WebServlet("/CreateCategory")
 public class CreateCategory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TemplateEngine templateEngine;
 	private Connection connection = null;
 
 	public CreateCategory() {
@@ -46,13 +45,6 @@ public class CreateCategory extends HttpServlet {
 			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
-
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,18 +96,6 @@ public class CreateCategory extends HttpServlet {
 				error_message = "Either entered name is in an invalid format or the selected parent is unavailable";
 			}
 		}
-
-		/*
-		if(badRequest) {
-			request.getSession().setAttribute("error_message", error_message);
-			request.getSession().setAttribute("name_error", name_error);
-			request.getSession().setAttribute("category_error", category_error);
-		}
-		
-		String ctxpath = getServletContext().getContextPath();
-		String path = ctxpath + "/GoToHomePage";
-		response.sendRedirect(path);
-		*/
 		
 		if(badRequest) {
 			request.setAttribute("error_message", error_message);

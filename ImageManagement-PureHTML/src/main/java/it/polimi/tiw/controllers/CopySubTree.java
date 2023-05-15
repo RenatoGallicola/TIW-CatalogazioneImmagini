@@ -28,7 +28,6 @@ import it.polimi.tiw.dao.CategoryDAO;
 public class CopySubTree extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
 
 	public CopySubTree() {
 		super();
@@ -48,13 +47,6 @@ public class CopySubTree extends HttpServlet {
 		} catch (SQLException e) {
 			throw new UnavailableException("Couldn't get db connection");
 		}
-
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -129,14 +121,6 @@ public class CopySubTree extends HttpServlet {
 				error_message = "Either the chosen category to copy or the destination is non-existent";
 			}
 		}
-		
-		/*
-		if(error) {
-			String path = getServletContext().getContextPath() + "/GoToErrorPage";
-			request.getSession().setAttribute("error", error_message);
-			response.sendRedirect(path);
-		}
-		*/
 		
 		if(error) {
 			String path = "/GoToErrorPage";

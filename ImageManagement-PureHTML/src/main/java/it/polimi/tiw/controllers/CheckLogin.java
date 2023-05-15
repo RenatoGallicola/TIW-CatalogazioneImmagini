@@ -26,7 +26,6 @@ import it.polimi.tiw.dao.UserDAO;
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
 
 	public CheckLogin() {
 		super();
@@ -46,13 +45,6 @@ public class CheckLogin extends HttpServlet {
 		} catch (SQLException e) {
 			throw new UnavailableException("Couldn't get db connection");
 		}
-		
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -81,11 +73,6 @@ public class CheckLogin extends HttpServlet {
 
 		if (bad_request || u == null) {
 			// Stay in login page, a login error occurred, credentials not correct
-			
-			//String path = getServletContext().getContextPath();
-			//request.getSession().setAttribute("login_error", true);
-			//response.sendRedirect(path);
-			
 			String path = "";
 			request.setAttribute("login_error", true);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(path);

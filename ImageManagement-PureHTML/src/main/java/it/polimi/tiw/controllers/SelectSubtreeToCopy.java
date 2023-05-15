@@ -83,11 +83,6 @@ public class SelectSubtreeToCopy extends HttpServlet {
 
 		if (bad_request) {
 			error_message = "The category id format is invalid";
-			/*
-			String path = getServletContext().getContextPath() + "/GoToErrorPage";
-			request.setAttribute("error", error_message);
-			response.sendRedirect(path);
-			*/
 			String path = "/GoToErrorPage";
 			request.setAttribute("error", error_message);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
@@ -117,13 +112,7 @@ public class SelectSubtreeToCopy extends HttpServlet {
 			error_message = "The chosen category is non-existent";
 		}
 		
-		if(error) {
-			/*
-			String path = getServletContext().getContextPath() + "/GoToErrorPage";
-			request.getSession().setAttribute("error", error_message);
-			response.sendRedirect(path);
-			*/
-			
+		if(error) {			
 			String path = "/GoToErrorPage";
 			request.setAttribute("error", error_message);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(path);

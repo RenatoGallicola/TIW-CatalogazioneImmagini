@@ -58,21 +58,12 @@ public class GoToIndex extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		
-		/*
-		if(request.getSession().getAttribute("login_error") != null)
-			ctx.setVariable("loginError", request.getSession().getAttribute("login_error"));
-		else
-			ctx.setVariable("loginError", false); // login page should not show errors when loaded for the first time
-		templateEngine.process(path, ctx, response.getWriter());
-		*/
-		
 		if(request.getAttribute("login_error") != null)
 			ctx.setVariable("loginError", request.getAttribute("login_error"));
 		else
 			ctx.setVariable("loginError", false); // login page should not show errors when loaded for the first time
-		templateEngine.process(path, ctx, response.getWriter());
 		
-		//request.getSession().removeAttribute("login_error");
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
