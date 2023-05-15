@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -42,7 +43,6 @@ public class SelectSubtreeToCopy extends HttpServlet {
 			String password = context.getInitParameter("dbPassword");
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
@@ -61,9 +61,10 @@ public class SelectSubtreeToCopy extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id_source = request.getParameter("idSource");
-		Boolean bad_request = false;
+		String error_message = null;
+		Boolean bad_request = false, error = false;
 		int int_source = -1;
-		
+
 		List<Category> allCategories = null;
 		List<Category> topCategories = null;
 
@@ -81,7 +82,11 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		}
 
 		if (bad_request) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
+			error_message = "The category id format is invalid";
+			String path = "/GoToErrorPage";
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 
@@ -90,15 +95,28 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		if (cService.validCategory(int_source)) {
 			try {
 				allCategories = cService.findAllCategories();
-				topCategories = cService.findTopCategoriesAndSubtrees(int_source, true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-						"Error in deleting the product in the database");
-				return;
+			} catch (SQLException e1) {
+				error = true;
+				error_message = "An error occurred while retrieving the categories from the database";
+			}
+			if(!error) {
+				try {
+					topCategories = cService.findTopCategoriesAndSubtrees(int_source, true);
+				} catch (SQLException e2) {
+					error = true;
+					error_message = "An error occurred while searching for the categories to copy";
+				}
 			}
 		} else {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Category does not exist in the database");
+			error = true;
+			error_message = "The chosen category is non-existent";
+		}
+		
+		if(error) {			
+			String path = "/GoToErrorPage";
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 
@@ -111,17 +129,15 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		ctx.setVariable("allCategories", allCategories);
 		ctx.setVariable("topCategories", topCategories);
 		ctx.setVariable("username", username);
-		ctx.setVariable("showCopy", false); // show 'copy here' button beside certain categories only 
+		ctx.setVariable("showCopy", false); // show 'copy here' button beside certain categories only
 		ctx.setVariable("idSource", int_source); // id of the subtree root to copy
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-	
-	
+
 	public void destroy() {
 		try {
 			if (connection != null) {
@@ -130,5 +146,4 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		} catch (SQLException sqle) {
 		}
 	}
-
 }

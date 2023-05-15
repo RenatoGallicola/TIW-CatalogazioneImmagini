@@ -8,20 +8,24 @@ import java.sql.SQLException;
 import it.polimi.tiw.beans.User;
 
 public class UserDAO {
-	
+
 	private Connection con;
 
 	public UserDAO(Connection connection) {
 		this.con = connection;
 	}
 
-	public User checkCredentials(String usrn, String pwd) throws SQLException {
+	public User checkCredentials(String usrn, String pwd) throws SQLException{
 		String query = "SELECT  username, password FROM user  WHERE username = ? AND password =?";
-		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
 			pstatement.setString(1, usrn);
 			pstatement.setString(2, pwd);
-			try (ResultSet result = pstatement.executeQuery();) {
-				if (!result.isBeforeFirst()) // no results, credential check failed
+			ResultSet result = null;
+			try {
+				result = pstatement.executeQuery();
+				if (!result.isBeforeFirst()) // no results, credentials check failed
 					return null;
 				else {
 					result.next();
@@ -30,8 +34,11 @@ public class UserDAO {
 					user.setUser(result.getString("username"));
 					return user;
 				}
+			} finally {
+				result.close();
 			}
+		} finally {
+			pstatement.close();
 		}
 	}
-
 }

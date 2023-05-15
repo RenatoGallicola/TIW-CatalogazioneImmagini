@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Login - Image Management</title>
+	<link rel="stylesheet" href="css/login.css" th:href="@{/css/login.css}">
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+</head>
+
+<body>
+	<div class="center">
+		
+		<h1>Login</h1>
+		
+		<div class="divider"></div>
+		
+		<div th:if="${loginError}" th:class="error_div">
+			<label class="error_symbol">&#x26A0</label>
+			<span></span>
+			<label class="error_label">Incorrect username or password</label>
+		</div>
+		
+		<form action="CheckLogin" method="POST">
+			<div th:class="${loginError} ? 'text_error' : 'text'">
+				<div th:class="${loginError} ? 'user_error' : 'user'">
+					<input type="text" name="username" required>
+					<img th:class="${loginError} ? 'img_error'" src="images/user.png"/>
+					<span th:class="${loginError} ? 'span_error'"></span>
+					<label th:class="${loginError} ? 'label_error'">Username</label>
+				</div> 
+			</div>
+			
+			<div class="fieldDivider"></div>
+			
+			<div th:class="${loginError} ? 'text_error' : 'text'">
+				<div th:class="${loginError} ? 'password_error' : 'password'">
+					<input type="password" name="password" required>
+					<img th:class="${loginError} ? 'img_error'" src="images/password.png"/>
+					<span th:class="${loginError} ? 'span_error'"></span>
+					<label th:class="${loginError} ? 'label_error'">Password</label>
+				</div> 
+			</div>
+			
+			<input type="submit" value="LOGIN">
+			
+		</form>
+		
+	</div>
+</body>
+</html>

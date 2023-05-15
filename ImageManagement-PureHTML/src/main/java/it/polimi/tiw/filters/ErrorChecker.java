@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter("/Checker")
-public class Checker implements Filter {
-       
-    public Checker() {
+@WebFilter("/ErrorChecker")
+public class ErrorChecker extends HttpFilter implements Filter {
+    
+    public ErrorChecker() {
         super();
     }
 
@@ -26,15 +26,13 @@ public class Checker implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		String loginpath = req.getServletContext().getContextPath() + "/index.html";
+		String home_path = req.getServletContext().getContextPath() + "/GoToHomePage";
 		
-		HttpSession s = req.getSession();
-		if (s.isNew() || s.getAttribute("user") == null) {
-			res.sendRedirect(loginpath);
+		if (req.getAttribute("error") == null) {
+			res.sendRedirect(home_path);
 			return;
 		}
-
-		// pass the request along the filter chain
+		
 		chain.doFilter(request, response);
 	}
 

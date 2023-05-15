@@ -48,7 +48,7 @@ body{
 	font-family: 'Oswald', sans-serif;
 	color: rgba(255 233 198 / 100%);
 	position: relative;
-	right: -23px;
+	right: -16px;
 	bottom: -28px;
 	overflow: hidden;
 	letter-spacing: 1px;
@@ -57,12 +57,12 @@ body{
 }
 
 a:hover {
-	width: 210px;
+	width: 190px;
 }
 
 a:hover .logout{
-	font-size: 24px;
-	bottom: -16px;
+	font-size: 22px;
+	bottom: -18px;
 	opacity: 1;
 	transition: 0.5s;
 }
@@ -102,7 +102,8 @@ a:hover .logout{
 	border-radius: 10px;
 }
 
-.nameField{
+.nameField,
+.nameFieldError {
 	position: relative;
 	padding: 10px 0 10px 0;
 }
@@ -112,7 +113,18 @@ a:hover .logout{
 	background: none;
  	outline: none;
 	color: white;
-	border-bottom: 2px solid rgba(45,36,36,0.6);
+	border-bottom: 2px solid rgba(45,36,36,0.4);
+	font-size: 18px;
+	width: 260px;
+	padding: 4px 10px 4px 10px;
+}
+
+.nameFieldError input{
+	border: none;
+	background: none;
+ 	outline: none;
+	color: white;
+	border-bottom: 2px solid rgba(45,36,36,1);
 	font-size: 18px;
 	width: 260px;
 	padding: 4px 10px 4px 10px;
@@ -121,7 +133,18 @@ a:hover .logout{
 .nameField label{
 	font-weight: bold;
 	font-size: 18px;
-	color: rgba(45,36,36,0.6);
+	color: rgba(45,36,36,0.4);
+	position: absolute;
+	margin-left: -270px;
+	padding: 4px 0px 4px 0px;
+	transition: .7s;
+	pointer-events: none;
+}
+
+.nameFieldError label{
+	font-weight: bold;
+	font-size: 18px;
+	color: rgba(45,36,36,1);
 	position: absolute;
 	margin-left: -270px;
 	padding: 4px 0px 4px 0px;
@@ -130,7 +153,9 @@ a:hover .logout{
 }
 
 .nameField input:focus,
-.nameField input:valid{
+.nameField input:valid,
+.nameFieldError input:focus,
+.nameFieldError input:valid{
 	border-color: white;
 	color: white;
 	font-weight: bold;
@@ -138,32 +163,52 @@ a:hover .logout{
 }
 
 .nameField input:focus + label,
-.nameField input:valid + label{
+.nameField input:valid + label,
+.nameFieldError input:focus + label,
+.nameFieldError input:valid + label{
 	margin-left: -340px;
+	color: rgba(45,36,36,0.8);
 	transition: .7s;
 }
 
-.categoryField{
+.categoryField,
+.categoryFieldError{
 	position: relative;
 	padding: 10px 0 10px 0;
 }
 
 .categoryField select{
 	border: none;
-	border-bottom: 2px solid rgba(45,36,36,0.6);
+	border-bottom: 2px solid rgba(45,36,36,0.4);
 	background: none;
  	outline: none;
 	text-align: center;
 	font-size: 18px;
 	font-weight: bold;
 	padding: 5px 0 5px 0;
-	color: rgba(45,36,36,0.6);
+	color: rgba(45,36,36,0.4);
 	min-width: 310px;
 	transition: 1.2s;
 	z-index: 1;
 }
 
-.categoryForm option{
+.categoryFieldError select{
+	border: none;
+	border-bottom: 2px solid rgba(45,36,36,1);
+	background: none;
+ 	outline: none;
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 5px 0 5px 0;
+	color: rgba(45,36,36,1);
+	min-width: 310px;
+	transition: 1.2s;
+	z-index: 1;
+}
+
+.categoryForm option,
+.categoryFormError option{
 	text-align: center;
 	font-weight: bold;
 	font-size: 15px;
@@ -171,40 +216,16 @@ a:hover .logout{
 	background-color: white;
 }
 
-.categoryField label{
-	width: 241px;
-	padding: 0 15px 0 15px;
-	font-weight: bold;
-	font-size: 18px;
-	color: rgba(45,36,36,0.6);
-	position: absolute;
-	left: 50%;
-	transform: translateX(-53%);
-	top: 16px;
-	background-color: #DDAB5D;
-	pointer-events: none;
-	transition: 1.2s;
-	opacity: 1;
-}
-
-.categoryField select:focus{
+.categoryField select:focus,
+.categoryFieldError select:focus{
 	color: white;
 	border-color: white;
 	transition: 1.2s;
-}
-
-.categoryField select:focus ~ label{
-	transition: 1.2s;
-	opacity: 0;
 }
 
 select:valid{
 	color: white;
 	border-color: white;
-}
-
-select:valid ~ label {
-  opacity: 0;
 }
 
 .categoryForm input[type="submit"]{
@@ -225,6 +246,51 @@ select:valid ~ label {
 .categoryForm input[type="submit"]:hover{
 	box-shadow: 0px 0px 8px 2px rgba(45,36,36,0.6);
 	transition: .7s;
+}
+
+/* FORM ERROR*/
+
+.error_div{
+	margin: 30px 0 0 0;
+	position: relative;
+	width: fit-content;
+	text-align: left;
+	height: fit-content;
+	top: -8px;
+	background-color: rgba(45,36,36,1);
+	left: 50%;
+	border-radius: 30px;
+	transform: translateX(-50%);
+	padding: 11px 45px 0 10px;
+	opacity: 0.9;
+}
+
+.error_div span::before{
+	content: "";
+	position: absolute;
+	margin: 0px 0px 0px 5px;
+	width: 2px;
+	height: 41px;
+	top: 3px;
+	border-radius: 100px;
+	background-color: white;	
+}
+
+.error_label{
+	position: relative;
+	left: 25px;
+	top: -10px;
+	font-size: 17px;
+	color: white;
+}
+
+.error_symbol{
+	margin: 0px 15px 0px 6px;
+	font-size: 28px;
+	position: relative;
+	top: -8px;
+	left: 7px;
+	color: white;
 }
 
 /* TREE */
@@ -356,4 +422,34 @@ ul li .subCategory::after {
 	font-weight: bold;
 	cursor: pointer;
 	transition: .2s;
+}
+
+.cancelLabel{
+	text-transform: uppercase;
+	color: #ffc0c0; 
+	border: 2px solid white;
+	border-radius: 20px;
+	padding: 8px 12px 8px 12px;
+	margin-top: 40px;
+	margin-left: -5px;
+	letter-spacing: 1px;
+	font-size: 15px;
+	font-weight: bold;
+	transition: .2s;
+}
+
+.cancelLabel:hover{
+	color: #fc6262; 
+	border: 2px solid #ffc0c0;
+	font-weight: bold;
+	cursor: pointer;
+	transition: .2s;
+}
+
+.cancelLi{
+	margin-top: 20px;;
+}
+
+.cancelDiv{
+	height: 1px;
 }

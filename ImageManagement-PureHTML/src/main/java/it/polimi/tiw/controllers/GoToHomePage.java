@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -42,7 +43,6 @@ public class GoToHomePage extends HttpServlet {
 			String password = context.getInitParameter("dbPassword");
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
@@ -60,21 +60,37 @@ public class GoToHomePage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Category> allCategories = null;
 		List<Category> topCategories = null;
+		String error_message = null;
+		Boolean error = false;
 		
 		CategoryDAO cService = new CategoryDAO(connection);
 		
 		try {
 			allCategories = cService.findAllCategories();
-			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in retrieving products from the database");
+		} catch (SQLException e1) {
+			error = true;
+			error_message = "An error occurred while retrieving the categories from the database";
+		}
+		if(!error) {
+			try {
+				topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
+			} catch (SQLException e2) {
+				error = true;
+				error_message = "An error occurred while building the category tree";
+			}
+		}
+		
+		if(error) {
+			request.removeAttribute("error_message");
+			request.removeAttribute("name_error");
+			request.removeAttribute("category_error");
+			
+			String path = "/GoToErrorPage";	
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 		
@@ -87,8 +103,28 @@ public class GoToHomePage extends HttpServlet {
 		ctx.setVariable("allCategories", allCategories);
 		ctx.setVariable("topCategories", topCategories);
 		ctx.setVariable("username", username);
-		ctx.setVariable("showCopy", true); // show 'copy' button beside each category 
-		templateEngine.process(path, ctx, response.getWriter());
+		ctx.setVariable("showCopy", true); // show 'copy' button beside each category
+		
+		if(request.getAttribute("error_message") != null)
+			ctx.setVariable("error_message", request.getAttribute("error_message"));
+		else
+			ctx.setVariable("error_message", null);
+		
+		if(request.getAttribute("name_error") != null)
+			ctx.setVariable("name_error", request.getAttribute("name_error"));
+		else
+			ctx.setVariable("name_error", false);
+		
+		if(request.getAttribute("category_error") != null)
+			ctx.setVariable("category_error", request.getAttribute("category_error"));
+		else
+			ctx.setVariable("category_error", false);
+		
+		templateEngine.process(path, ctx, response.getWriter());	
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 	
 	@Override
@@ -101,5 +137,4 @@ public class GoToHomePage extends HttpServlet {
 			}
 		}
 	}
-
 }

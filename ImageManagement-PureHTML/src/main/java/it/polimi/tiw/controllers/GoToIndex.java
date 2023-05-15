@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -19,15 +18,13 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.UserDAO;
-
-@WebServlet("/CheckLogin")
-public class CheckLogin extends HttpServlet {
+@WebServlet("/GoToIndex")
+public class GoToIndex extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private TemplateEngine templateEngine;
 	private Connection connection = null;
 
-	public CheckLogin() {
+	public GoToIndex() {
 		super();
 	}
 
@@ -41,48 +38,36 @@ public class CheckLogin extends HttpServlet {
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
+
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		String path = "/WEB-INF/index.html";
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		
+		if(request.getAttribute("login_error") != null)
+			ctx.setVariable("loginError", request.getAttribute("login_error"));
+		else
+			ctx.setVariable("loginError", false); // login page should not show errors when loaded for the first time
+		
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String usrn = request.getParameter("username");
-		String pwd = request.getParameter("password");
-		Boolean bad_request = false;
-
-		if (usrn == null || usrn.isEmpty() || pwd == null || pwd.isEmpty()) {
-			bad_request = true;
-		}
-
-		UserDAO usr = new UserDAO(connection);
-		User u = null;
-		
-		if(!bad_request) {
-			try {
-				u = usr.checkCredentials(usrn, pwd);
-			} catch (SQLException e) {
-				bad_request = true;
-			}
-		}
-
-		if (bad_request || u == null) {
-			// Stay in login page, a login error occurred, credentials not correct
-			String path = "";
-			request.setAttribute("login_error", true);
-			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-			dispatcher.forward(request, response);
-		} else {
-			String path = getServletContext().getContextPath();
-			request.getSession().setAttribute("user", u);
-			path = path + "/GoToHomePage";
-			response.sendRedirect(path);
-		}
+		doGet(request, response);
 	}
 
 	public void destroy() {
