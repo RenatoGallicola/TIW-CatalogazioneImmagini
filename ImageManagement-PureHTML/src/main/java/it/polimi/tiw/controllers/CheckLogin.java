@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -80,9 +81,15 @@ public class CheckLogin extends HttpServlet {
 
 		if (bad_request || u == null) {
 			// Stay in login page, a login error occurred, credentials not correct
-			String path = getServletContext().getContextPath();
-			request.getSession().setAttribute("login_error", true);
-			response.sendRedirect(path);
+			
+			//String path = getServletContext().getContextPath();
+			//request.getSession().setAttribute("login_error", true);
+			//response.sendRedirect(path);
+			
+			String path = "";
+			request.setAttribute("login_error", true);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 		} else {
 			String path = getServletContext().getContextPath();
 			request.getSession().setAttribute("user", u);

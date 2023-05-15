@@ -36,6 +36,7 @@
     	<url-pattern>/CheckLogout</url-pattern>
     	<url-pattern>/CopySubTree</url-pattern>
     	<url-pattern>/CreateCategory</url-pattern>
+    	<url-pattern>/GoToErrorPage</url-pattern>
     	<url-pattern>/GoToHomePage</url-pattern>
     	<url-pattern>/SelectSubtreeToCopy</url-pattern>
  	</filter-mapping> 

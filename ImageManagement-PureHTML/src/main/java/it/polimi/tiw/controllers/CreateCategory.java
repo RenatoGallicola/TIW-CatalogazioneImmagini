@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -104,6 +105,7 @@ public class CreateCategory extends HttpServlet {
 			}
 		}
 
+		/*
 		if(badRequest) {
 			request.getSession().setAttribute("error_message", error_message);
 			request.getSession().setAttribute("name_error", name_error);
@@ -113,6 +115,21 @@ public class CreateCategory extends HttpServlet {
 		String ctxpath = getServletContext().getContextPath();
 		String path = ctxpath + "/GoToHomePage";
 		response.sendRedirect(path);
+		*/
+		
+		if(badRequest) {
+			request.setAttribute("error_message", error_message);
+			request.setAttribute("name_error", name_error);
+			request.setAttribute("category_error", category_error);
+			
+			String path = "/GoToHomePage";
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
+		} else {
+			String ctxpath = getServletContext().getContextPath();
+			String path = ctxpath + "/GoToHomePage";
+			response.sendRedirect(path);
+		}
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -129,10 +130,19 @@ public class CopySubTree extends HttpServlet {
 			}
 		}
 		
+		/*
 		if(error) {
 			String path = getServletContext().getContextPath() + "/GoToErrorPage";
 			request.getSession().setAttribute("error", error_message);
 			response.sendRedirect(path);
+		}
+		*/
+		
+		if(error) {
+			String path = "/GoToErrorPage";
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 		}
 	}
 

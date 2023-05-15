@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -82,9 +83,15 @@ public class SelectSubtreeToCopy extends HttpServlet {
 
 		if (bad_request) {
 			error_message = "The category id format is invalid";
+			/*
 			String path = getServletContext().getContextPath() + "/GoToErrorPage";
-			request.getSession().setAttribute("error", error);
+			request.setAttribute("error", error_message);
 			response.sendRedirect(path);
+			*/
+			String path = "/GoToErrorPage";
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 
@@ -111,9 +118,16 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		}
 		
 		if(error) {
+			/*
 			String path = getServletContext().getContextPath() + "/GoToErrorPage";
 			request.getSession().setAttribute("error", error_message);
 			response.sendRedirect(path);
+			*/
+			
+			String path = "/GoToErrorPage";
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 

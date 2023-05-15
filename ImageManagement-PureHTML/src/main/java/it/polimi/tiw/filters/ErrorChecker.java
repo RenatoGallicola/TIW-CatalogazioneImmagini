@@ -28,8 +28,7 @@ public class ErrorChecker extends HttpFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse) response;
 		String home_path = req.getServletContext().getContextPath() + "/GoToHomePage";
 		
-		HttpSession s = req.getSession();
-		if (s.isNew() || s.getAttribute("error") == null) {
+		if (req.getAttribute("error") == null) {
 			res.sendRedirect(home_path);
 			return;
 		}

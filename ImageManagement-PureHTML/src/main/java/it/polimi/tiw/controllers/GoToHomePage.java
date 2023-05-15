@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -83,13 +84,24 @@ public class GoToHomePage extends HttpServlet {
 		
 		if(error) {
 			
+			/*
 			request.getSession().removeAttribute("error_message");
 			request.getSession().removeAttribute("name_error");
 			request.getSession().removeAttribute("category_error");
+			*/
+			request.removeAttribute("error_message");
+			request.removeAttribute("name_error");
+			request.removeAttribute("category_error");
 			
-			String path = getServletContext().getContextPath() + "/GoToErrorPage";
-			request.getSession().setAttribute("error", error_message);
-			response.sendRedirect(path);			
+			
+			//String path = getServletContext().getContextPath() + "/GoToErrorPage";
+			
+			String path = "/GoToErrorPage";
+			//request.getSession().setAttribute("error", error_message);
+			//response.sendRedirect(path);		
+			request.setAttribute("error", error_message);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
+			dispatcher.forward(request, response);
 			return;
 		}
 		
@@ -104,6 +116,7 @@ public class GoToHomePage extends HttpServlet {
 		ctx.setVariable("username", username);
 		ctx.setVariable("showCopy", true); // show 'copy' button beside each category
 		
+		/*
 		if(request.getSession().getAttribute("error_message") != null)
 			ctx.setVariable("error_message", request.getSession().getAttribute("error_message"));
 		else
@@ -124,6 +137,24 @@ public class GoToHomePage extends HttpServlet {
 		request.getSession().removeAttribute("error_message");
 		request.getSession().removeAttribute("name_error");
 		request.getSession().removeAttribute("category_error");
+		*/
+		
+		if(request.getAttribute("error_message") != null)
+			ctx.setVariable("error_message", request.getAttribute("error_message"));
+		else
+			ctx.setVariable("error_message", null);
+		
+		if(request.getAttribute("name_error") != null)
+			ctx.setVariable("name_error", request.getAttribute("name_error"));
+		else
+			ctx.setVariable("name_error", false);
+		
+		if(request.getAttribute("category_error") != null)
+			ctx.setVariable("category_error", request.getAttribute("category_error"));
+		else
+			ctx.setVariable("category_error", false);
+		
+		templateEngine.process(path, ctx, response.getWriter());	
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
