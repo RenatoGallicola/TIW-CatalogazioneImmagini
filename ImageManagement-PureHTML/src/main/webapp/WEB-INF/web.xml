@@ -44,4 +44,11 @@
     	<filter-name>ErrorChecker</filter-name> 
     	<url-pattern>/GoToErrorPage</url-pattern>
  	</filter-mapping> 
+ 	<error-page>
+    	<error-code>404</error-code>
+    	<location>/WEB-INF/status_code_errors/error404.html</location>
+	</error-page>
+	<error-page>
+    	<location>/WEB-INF/status_code_errors/default_error.html</location>
+	</error-page>
 </web-app>
