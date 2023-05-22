@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Login - Image Management</title>
+	<link rel="stylesheet" href="css/login.css">
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+</head>
+
+<body>
+	<div class="center">
+		
+		<h1>Login</h1>
+		
+		<div class="divider"></div>
+		
+		<div id="loginError">
+			<!--
+			<label class="error_symbol">&#x26A0</label>
+			<span></span>
+			<label class="error_label">Incorrect username or password</label>
+			-->
+		</div>
+		
+		<form action="CheckLogin" method="POST">
+			<div class="text">
+				<div class="user">
+					<input type="text" name="username" required>
+					<img src="images/user.png"/>
+					<span></span>
+					<label>Username</label>
+				</div> 
+			</div>
+			
+			<div class="fieldDivider"></div>
+			
+			<div class="text">
+				<div class="password">
+					<input type="password" name="password" required>
+					<img src="images/password.png"/>
+					<span></span>
+					<label>Password</label>
+				</div> 
+			</div>
+			
+			<input type="submit" value="LOGIN">
+			
+		</form>
+		
+	</div>
+</body>
+</html>

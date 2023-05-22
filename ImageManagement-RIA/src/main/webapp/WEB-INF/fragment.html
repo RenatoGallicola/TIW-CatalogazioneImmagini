@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+ 
+	<div th:fragment="list(category)">
+
+		<div th:if="${category.isTop == true}" th:class="(${category.isTop}) ? 'top'">
+		
+			<label th:class="${category.selected} ? 'selectedCategoryId' : 'categoryId'" th:text="${category.id}"></label>
+			<label class="categorySpace"> </label>
+			<label th:class="${category.selected} ? 'selectedCategoryName' : 'categoryName'" th:text="${category.name}"></label>
+			<a th:if="${showCopy}" th:href="@{/SelectSubtreeToCopy(idSource=${category.id})}"><label class="copyLabel">Copy</label></a>
+			<a th:if="${!showCopy && !category.selected && #lists.size(category.subCategories)<9}" th:href="@{/CopySubTree(idSource=${idSource},idDestination=${category.id})}"><label class="copyLabel">Copy here</label></a>
+
+		</div>
+
+		<ul th:if="${not #lists.isEmpty(category.subCategories)}">
+
+			<li th:each="child : ${category.subCategories}" class="subCategory"> 
+			
+				<label th:class="${child.selected} ? 'selectedCategoryId' : 'categoryId'" th:text="${child.id}"></label>
+				<label class="categorySpace"> </label>
+				<label th:class="${child.selected} ? 'selectedCategoryName' : 'categoryName'" th:text="${child.name}"></label>
+				<a th:if="${showCopy}" th:href="@{/SelectSubtreeToCopy(idSource=${child.id})}"><label class="copyLabel">Copy</label></a>
+				<a th:if="${!showCopy && !child.selected && #lists.size(child.subCategories)<9}" th:href="@{/CopySubTree(idSource=${idSource},idDestination=${child.id})}"><label class="copyLabel">Copy here</label></a>
+			
+				<ul th:replace="this :: list(${child})"></ul>
+				
+			</li>
+			
+		</ul>
+
+	</div>
+
+</body>
+
+</html>
