@@ -67,16 +67,19 @@ public class CheckLogin extends HttpServlet {
 		}
 
 		if (bad_request || u == null) {
-			// Stay in login page, a login error occurred, credentials not correct
-			String path = "";
-			request.setAttribute("login_error", true);
-			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-			dispatcher.forward(request, response);
-		} else {
-			String path = getServletContext().getContextPath();
+			
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("Incorrect credentials");
+			
+		} else 
+		{
+			
 			request.getSession().setAttribute("user", u);
-			path = path + "/GoToHomePage";
-			response.sendRedirect(path);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().println(usrn);
+			
 		}
 	}
 

@@ -175,6 +175,23 @@ input[type="submit"]:hover{
 	border-radius: 30px;
 	transform: translateX(-50%);
 	padding: 11px 10px 0 10px;
+	
+	display: none;
+}
+
+.error_div_show{
+	position: relative;
+	width: 85%;
+	text-align: left;
+	height: fit-content;
+	top: -8px;
+	background-color: #ffc0c0;
+	left: 50%;
+	border-radius: 30px;
+	transform: translateX(-50%);
+	padding: 11px 10px 0 10px;
+	
+	display: block;
 }
 
 .error_div span::before{
