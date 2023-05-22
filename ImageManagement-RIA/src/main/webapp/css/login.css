@@ -1,0 +1,274 @@
+body{
+	margin: 0;
+	padding: 0;
+	background: linear-gradient(120deg,rgb(255 233 198 / 50%),rgba(221,171,93,0.5));
+	height: 100vh;
+	overflow: hidden;
+	font-family: "Poppins", sans-serif;
+}
+
+.center{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	background: #2D2424;
+	border-radius: 10px;
+	box-shadow: 0px 0px 1px 10px #DDAB5D;
+}
+
+.center h1{
+	text-align: left;
+	margin-left: 40px;
+	margin-top: 30px;
+	font-size: 30px;
+	font-weight: 600;
+	color: white;
+	padding: 0 0 2px 0;
+}
+
+.center h1::before{
+	content: "";
+	position: absolute;
+	width: 36px;
+	height: 4px;
+	top: 62px;
+	border-radius: 10px;
+	background-color: #DDAB5D;
+}
+
+.divider{
+	width: 88%;
+	position: relative;
+	margin-bottom: 45px;
+	background-color: white;
+	height: 1px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.center form{
+	padding: 0 40px;
+	box-sizing: border-box;
+}
+
+.fieldDivider{
+	position: relative;
+	height: 1px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+form .text{
+	position: relative;
+	margin: 30px 0;
+}
+
+.text input{
+  	width: 80%;
+  	padding: 0 55px;
+	height: 40px;
+	font-size: 18px;
+	color: white;
+	border: none;
+	background: none;
+ 	outline: none;
+}
+
+.text label{
+	position: absolute;
+	top: 50%;
+	left: 52px;
+	color: #adadad;
+	transform: translateY(-50%);
+	font-size: 18px;
+	pointer-events: none;
+	transition: .5s;
+}
+
+.text span::before{
+	content: '';
+	position: absolute;
+	top: 35px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: #ADADAD;
+	transition: .5s;
+	z-index:1;
+}
+
+.text input:focus ~ label,
+.text input:valid ~ label{
+	top: -5px;
+	color: #DDAB5D;
+}
+
+.text input:focus ~ span::before,
+.text input:valid ~ span::before{
+	background: #DDAB5D;
+}
+
+.user img{
+	width: 15%;
+	position: absolute;
+	left: -11px;
+	top: -5px;
+	background-color: #adadad;
+	border-radius: 50%;
+	border: 2px solid;
+	color: #adadad;
+	z-index:2;
+}
+
+.password img{
+	width: 15%;
+	position: absolute;
+	left: -11px;
+	top: -5px;
+	background-color: #adadad;
+	border-radius: 50%;
+	border: 2px solid;
+	color: #adadad;
+	z-index:2;
+}
+
+.text input:focus ~ img,
+.text input:valid ~ img{
+	color: #DDAB5D;
+	background-color: #DDAB5D;
+}
+
+input[type="submit"]{
+	margin: 30px 0;
+	transform: translateY(-15px);
+	width: 100%;
+	height: 50px;
+	border: 2px solid;
+  	background: #DDAB5D;
+ 	border-radius: 25px;
+	font-size: 18px;
+	color: white;
+	font-weight: 700;
+	cursor: pointer;
+	letter-spacing: 1px;
+	outline: none;
+	transition: 0.5s;
+}
+
+input[type="submit"]:hover{
+	box-shadow: 0px 0px 8px 5px #DDAB5D;
+	transition: 0.5s;
+}
+
+/* LOGIN ERROR */
+
+.error_div{
+	position: relative;
+	width: 85%;
+	text-align: left;
+	height: fit-content;
+	top: -8px;
+	background-color: #ffc0c0;
+	left: 50%;
+	border-radius: 30px;
+	transform: translateX(-50%);
+	padding: 11px 10px 0 10px;
+}
+
+.error_div span::before{
+	content: "";
+	position: absolute;
+	margin: 0px 0px 0px 5px;
+	width: 2px;
+	height: 41px;
+	top: 3px;
+	border-radius: 100px;
+	background-color: #2d2424;	
+}
+
+.error_label{
+	position: relative;
+	left: 25px;
+	top: -12px;
+	font-weight: bold;
+	color: #2d2424;
+}
+
+.error_symbol{
+	margin: 0px 15px 0px 6px;
+	font-size: 28px;
+	position: relative;
+	top: -8px;
+	left: 7px;
+	color: #2d2424;
+}
+
+form .text_error{
+	position: relative;
+	margin: 30px 0;
+}
+
+.text_error input{
+  	width: 75%;
+  	padding: 0 55px;
+	height: 40px;
+	font-size: 18px;
+	color: white;
+	border: none;
+	background: none;
+ 	outline: none;
+}
+
+.text_error label{
+	position: absolute;
+	top: 50%;
+	left: 52px;
+	color: #ffc0c0;
+	transform: translateY(-50%);
+	font-size: 18px;
+	pointer-events: none;
+	transition: .5s;
+}
+
+.text_error span::before{
+	content: '';
+	position: absolute;
+	top: 35px;
+	left: 0;
+	width: 95%;
+	height: 2px;
+	background: #ffc0c0;
+	transition: .5s;
+	z-index:1;
+}
+
+.text_error input:focus ~ label,
+.text_error input:valid ~ label{
+	top: -5px;
+	color: #DDAB5D;
+}
+
+.text_error input:focus ~ span::before,
+.text_error input:valid ~ span::before{
+	background: #DDAB5D;
+}
+
+.img_error{
+	width: 15%;
+	position: absolute;
+	left: -11px;
+	top: -5px;
+	background-color: #ffc0c0;
+	border-radius: 50%;
+	border: 2px solid;
+	color: #ffc0c0;
+	z-index:2;
+}
+
+.text_error input:focus + img,
+.text_error input:valid + img{
+	color: #DDAB5D;
+	background-color: #DDAB5D;
+}

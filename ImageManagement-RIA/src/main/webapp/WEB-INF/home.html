@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Home - Image Management</title>
+	<link rel="stylesheet" href="../css/home.css" th:href="@{/css/home.css}"/>
+	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
+</head>
+
+<body>
+	
+	<div class="userInfo">
+		
+		<label th:text="${username}"></label>
+		<a th:href="@{/CheckLogout}">
+			<img src="/ImageManagement-PureHTML/images/user.png"/>
+			<div class="logout">LOGOUT</div>			
+		</a>
+		
+	</div>
+	
+	<div class="pageContent">
+		
+		<div class="categoryForm">
+		
+			<p>Complete the form to create a new category</p>
+			
+			<form action="#" th:action="@{/CreateCategory}" method="POST">
+			
+				<div th:if="${name_error || category_error}" th:class="error_div">
+					<label class="error_symbol">&#x26A0</label>
+					<span></span>
+					<label class="error_label" th:text="${error_message}"></label>
+				</div>
+				
+				<div th:class="${name_error!=null && name_error} ? 'nameFieldError' : 'nameField'">
+					<input type="text" name="name" required/>
+					<label>Name</label>
+				</div>
+				
+				<div th:class="${category_error!=null && category_error} ? 'categoryFieldError' : 'categoryField'">
+					<select name="categoryId" id="categoryId" required>
+						<option value="" disabled selected>Choose the parent category</option>
+						<option value="0">0 - Root</option>
+						<option th:each="c : ${allCategories}" th:value="${c.id} " th:text="${c.id + ' - ' + c.name}"></option>
+					</select>
+				</div>
+				
+				<input type="submit" value="CREATE">
+			
+			</form>
+		</div>
+		
+		<div class="treeDiv">
+			<ul class="categoryTree">
+				
+				<li th:if="${!showCopy}" >
+					<a th:href="@{/GoToHomePage}">
+						<label class="cancelLabel">Cancel</label>
+					</a>
+				</li>
+				
+				<li th:if="${!showCopy}" class="cancelLi">
+					<div class="cancelDiv"></span>
+				</li>
+				
+				<li th:each="category : ${topCategories}"
+					th:insert="@{WEB-INF/fragment.html} :: list (category)">
+				</li>
+				
+				<li th:if="${!showCopy && #lists.size(topCategories)<9}" >
+					<a th:href="@{/CopySubTree(idSource=${idSource},idDestination=0)}">
+						<label class="copyLabel">Copy here</label>
+					</a>
+				</li>
+				
+				<li><div class="treeFooter"></div></li>
+				
+			</ul>
+		</div>
+	</div>
+	
+</body>
+</html>
