@@ -20,7 +20,7 @@
                 break;
               case 401: // unauthorized
               
-              	var div = document.getElementById("ErrorBox");
+              	var div = document.getElementById("errorBox");
               
               	div.className = "error_div";
               	
