@@ -84,7 +84,7 @@ public class ChangeNameCategory extends HttpServlet {
 			{
 				bad_request = true;
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Error Parameters");
+				response.getWriter().println("Error parameters");
 			}
 		}
 		else
@@ -108,14 +108,14 @@ public class ChangeNameCategory extends HttpServlet {
 				{
 					bad_request = true;
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					response.getWriter().println("Server error during changing name ");
+					response.getWriter().println("Server error during changing name");
 				}
 			}
 			else
 			{
 				bad_request = true;
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Category selected doesn't exists");
+				response.getWriter().println("Selected category doesn't exist");
 			}
 			
 		}
@@ -124,7 +124,7 @@ public class ChangeNameCategory extends HttpServlet {
 		if(!bad_request)
 		{
 			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().println("Name Changed");
+			response.getWriter().println("Name changed");
 		}
 		
 		
