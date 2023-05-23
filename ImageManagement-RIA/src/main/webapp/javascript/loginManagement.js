@@ -4,7 +4,7 @@
 
 (function() { // avoid variables ending up in the global scope
 
-  document.getElementById("loginForm").addEventListener('click', (e) => {
+  document.getElementById("loginForm").addEventListener('submit', (e) => {
 	  
 	e.preventDefault();
     var form = e.target.closest("form");
@@ -19,9 +19,30 @@
                 window.location.href = "home.html";
                 break;
               case 401: // unauthorized
-                  document.getElementById("loginError").textContent = message;
-                  document.getElementById("ErrorBox").className = "error_div_show";
-                  break;
+              
+              	var div = document.getElementById("ErrorBox");
+              
+              	div.className = "error_div";
+              	
+              	var lab1 = document.createElement("label");
+              	lab1.className = "error_symbol";
+              	
+              	var content1 = document.createTextNode('\u26A0');
+              	lab1.appendChild(content1);
+              	
+              	var span = document.createElement("span");
+              	
+              	var lab2 = document.createElement("label");
+              	lab2.id = "loginError";
+              	lab2.className = "error_label";
+              	
+              	var content2 = document.createTextNode(message);
+              	lab2.appendChild(content2);
+              	
+              	div.appendChild(lab1);
+              	div.appendChild(span);
+              	div.appendChild(lab2);
+                break;
             }
           }
         }
