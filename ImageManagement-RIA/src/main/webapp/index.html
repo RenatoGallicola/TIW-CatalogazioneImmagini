@@ -6,6 +6,10 @@
 	<title>Login - Image Management</title>
 	<link rel="stylesheet" href="css/login.css">
 	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+	
+	<script src="javascript/loginManagement.js" charset="utf-8" defer></script>
+	<script src="javascript/utils.js" charset="utf-8" defer></script>
+	
 </head>
 
 <body>
@@ -15,15 +19,9 @@
 		
 		<div class="divider"></div>
 		
-		<div id="loginError">
-			<!--
-			<label class="error_symbol">&#x26A0</label>
-			<span></span>
-			<label class="error_label">Incorrect username or password</label>
-			-->
-		</div>
+		<div id="errorBox"> </div>
 		
-		<form action="CheckLogin" method="POST">
+		<form id="loginForm" action="#" method="POST">
 			<div class="text">
 				<div class="user">
 					<input type="text" name="username" required>
@@ -43,7 +41,6 @@
 					<label>Password</label>
 				</div> 
 			</div>
-			
 			<input type="submit" value="LOGIN">
 			
 		</form>

@@ -293,7 +293,7 @@ public class CategoryDAO {
 		}
 	}
 
-	private boolean isValidName(String name) {
+	public boolean isValidName(String name) {
 		Pattern p = Pattern.compile("^[ A-Za-z]+$");
 		Matcher m = p.matcher(name);
 		return (m.matches() && !(name.isBlank()));
@@ -418,5 +418,52 @@ public class CategoryDAO {
 			// Build id destination of cat now:
 			realCopySubTree(c, idOfNewCategory);
 		}
+	}
+	
+	
+	public void changeName(int id_cat, String newName) throws SQLException
+	{	
+		
+		try
+		{
+			connection.setAutoCommit(false);
+			
+			//Change name now:
+			realChangeName(id_cat, newName);
+			
+			connection.commit();
+		}
+		catch(SQLException e)
+		{
+			connection.rollback();
+			throw e;
+		}
+		finally
+		{
+			connection.setAutoCommit(true);
+		}
+	}
+	
+	
+	private void realChangeName(int id_cat, String newName) throws SQLException
+	{
+		PreparedStatement pstatement = null;
+		try
+		{
+			pstatement = connection.prepareStatement("UPDATE image_management.category SET name = '?' WHERE id = ?");
+			
+			//Set parameters in query now:
+			pstatement.setString(1, newName);
+			pstatement.setInt(2, id_cat);
+			
+			//Execute query:
+			pstatement.executeUpdate();
+			
+		}
+		finally
+		{
+			pstatement.close();
+		}
+		
 	}
 }

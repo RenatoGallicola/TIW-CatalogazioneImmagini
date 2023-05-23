@@ -39,6 +39,7 @@
     	<url-pattern>/GoToErrorPage</url-pattern>
     	<url-pattern>/GoToHomePage</url-pattern>
     	<url-pattern>/SelectSubtreeToCopy</url-pattern>
+    	<url-pattern>/ChangeNameCategory</url-pattern>
  	</filter-mapping> 
  	<filter-mapping> 
     	<filter-name>ErrorChecker</filter-name> 
