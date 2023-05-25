@@ -117,7 +117,7 @@
 		//Get all categories from server
 		this.show = function(){
 			
-			 makeCall("POST", 'GetCategories', null, function(x) {
+			 makeCall("GET", 'GetCategories', null, function(x) {
 					 if (x.readyState == XMLHttpRequest.DONE)
 					 {
 						 switch (x.status)

@@ -20,17 +20,17 @@ import it.polimi.tiw.beans.Category;
 import it.polimi.tiw.dao.CategoryDAO;
 
 /**
- * Servlet implementation class GetCategories
+ * Servlet implementation class GetTree
  */
-@WebServlet("/GetCategories")
-public class GetCategories extends HttpServlet {
+@WebServlet("/GetTree")
+public class GetTree extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetCategories() {
+    public GetTree() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -58,21 +58,21 @@ public class GetCategories extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		
-		List<Category> allCategories = null;
+		List<Category> topCategories = null;
 		Boolean error = false;
-		String error_message = "error download categories";
+		String error_message = "An error occurred while building the category tree";
 		CategoryDAO cService = new CategoryDAO(connection);
 		
 		try {
-			allCategories = cService.findAllCategories();
-		} catch (SQLException e1) {
+			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
+		} catch (SQLException e2) {
 			error = true;
 		}
 		
+		
 		if(!error)
 		{
-			String json = new Gson().toJson(allCategories);
+			String json = new Gson().toJson(topCategories);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
@@ -83,6 +83,8 @@ public class GetCategories extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().write(error_message);
 		}
+		
+		
 	}
 
 	/**
