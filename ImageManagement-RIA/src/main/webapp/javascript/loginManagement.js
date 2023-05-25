@@ -21,27 +21,31 @@
               case 401: // unauthorized
               
               	var div = document.getElementById("errorBox");
-              
-              	div.className = "error_div";
               	
-              	var lab1 = document.createElement("label");
-              	lab1.className = "error_symbol";
-              	
-              	var content1 = document.createTextNode('\u26A0');
-              	lab1.appendChild(content1);
-              	
-              	var span = document.createElement("span");
-              	
-              	var lab2 = document.createElement("label");
-              	lab2.id = "loginError";
-              	lab2.className = "error_label";
-              	
-              	var content2 = document.createTextNode(message);
-              	lab2.appendChild(content2);
-              	
-              	div.appendChild(lab1);
-              	div.appendChild(span);
-              	div.appendChild(lab2);
+              	if(div.className !== "error_div")
+              	{
+					div.className = "error_div";
+					
+	              	var lab1 = document.createElement("label");
+	              	lab1.className = "error_symbol";
+	              	
+	              	var content1 = document.createTextNode('\u26A0');
+	              	lab1.appendChild(content1);
+	              	
+	              	var span = document.createElement("span");
+	              	
+	              	var lab2 = document.createElement("label");
+	              	lab2.id = "loginError";
+	              	lab2.className = "error_label";
+	              	
+	              	var content2 = document.createTextNode(message);
+	              	lab2.appendChild(content2);
+	              	
+	              	div.appendChild(lab1);
+	              	div.appendChild(span);
+	              	div.appendChild(lab2);
+				}
+				
                 break;
             }
           }

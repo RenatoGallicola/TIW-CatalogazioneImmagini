@@ -22,8 +22,8 @@ public class CheckLogout extends HttpServlet {
 		if(session!=null) 
 			session.invalidate();
 		
-		String path = getServletContext().getContextPath();
-		response.sendRedirect(path);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().println("Logout effettuato con successo");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

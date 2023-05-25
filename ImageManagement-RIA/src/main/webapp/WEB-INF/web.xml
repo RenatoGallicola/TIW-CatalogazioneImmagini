@@ -40,6 +40,8 @@
     	<url-pattern>/GoToHomePage</url-pattern>
     	<url-pattern>/SelectSubtreeToCopy</url-pattern>
     	<url-pattern>/ChangeNameCategory</url-pattern>
+    	<url-pattern>/GetCategories</url-pattern>
+    	<url-pattern>/home.html</url-pattern>
  	</filter-mapping> 
  	<filter-mapping> 
     	<filter-name>ErrorChecker</filter-name> 

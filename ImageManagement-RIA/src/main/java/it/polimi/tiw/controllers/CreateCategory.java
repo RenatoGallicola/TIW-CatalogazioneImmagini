@@ -9,6 +9,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import it.polimi.tiw.dao.CategoryDAO;
 
 @WebServlet("/CreateCategory")
+@MultipartConfig
 public class CreateCategory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -50,19 +52,17 @@ public class CreateCategory extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = null;
 		int f_id = -1;
-		boolean badRequest = false, name_error = false, category_error = false;
+		boolean badRequest = false;
 		String error_message = null;
 		
 		try {
 			name = request.getParameter("name");
 			if(name.isEmpty() || name.isBlank()) {
 				badRequest = true;
-				name_error = true;
 				error_message = "No name entered for the new category";
 			}				
 		} catch (NullPointerException e) {
 			badRequest = true;
-			name_error = true;
 			error_message = "No name entered for the new category";
 		}
 		
@@ -71,12 +71,10 @@ public class CreateCategory extends HttpServlet {
 				f_id = Integer.parseInt(request.getParameter("categoryId"));
 				if (f_id < 0) {
 					badRequest = true;
-					category_error = true;
 					error_message = "Invalid parent category";
 				}
 			} catch (NullPointerException | NumberFormatException e) {
 				badRequest = true;
-				category_error = true;
 				error_message = "Parent category either invalid or not entered";
 			}
 		}
@@ -87,24 +85,16 @@ public class CreateCategory extends HttpServlet {
 				cService.insertCategory(name, f_id);
 			} catch (SQLException e) {
 				badRequest = true;
-				name_error = true;
-				category_error = true;
 				error_message = "Either entered name is in an invalid format or the selected parent is unavailable";
 			}
 		}
 		
 		if(badRequest) {
-			request.setAttribute("error_message", error_message);
-			request.setAttribute("name_error", name_error);
-			request.setAttribute("category_error", category_error);
-			
-			String path = "/GoToHomePage";
-			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-			dispatcher.forward(request, response);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(error_message);
 		} else {
-			String ctxpath = getServletContext().getContextPath();
-			String path = ctxpath + "/GoToHomePage";
-			response.sendRedirect(path);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.getWriter().println("Category Created Correctly");
 		}
 	}
 

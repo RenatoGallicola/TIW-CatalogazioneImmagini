@@ -29,11 +29,13 @@ public class UserChecker implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		String loginpath = req.getServletContext().getContextPath();
+		String loginpath = req.getServletContext().getContextPath() + "/index.html";
 		
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
-			res.sendRedirect(loginpath);
+			res.setStatus(403);
+			res.setHeader("Location", loginpath);
+			System.out.print("Login checker FAILED...\n");
 			return;
 		}
 

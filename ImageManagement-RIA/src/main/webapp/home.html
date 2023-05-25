@@ -4,8 +4,11 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Home - Image Management</title>
-	<link rel="stylesheet" href="../css/home.css"/>
-	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
+	<link rel="stylesheet" href="css/home.css"/>
+	<link rel="icon" type="image/x-icon" href="/ImageManagement-RIA/images/favicon.ico">
+	<script src="javascript/utils.js" charset="utf-8" defer></script>
+	<script src="javascript/homePageManagement.js" charset="utf-8" defer></script>
+	
 </head>
 
 <body>
@@ -13,8 +16,8 @@
 	<div class="userInfo">
 		
 		<label id="username"></label>
-		<a href="CheckLogout">
-			<img src="/ImageManagement-PureHTML/images/user.png"/>
+		<a id="logout">
+			<img src="/ImageManagement-RIA/images/user.png"/>
 			<div class="logout">LOGOUT</div>			
 		</a>
 		
@@ -28,21 +31,15 @@
 			
 			<form action="#" id="createCategory">
 			
-				<div id="error_div">
-					<!--
-					<label class="error_symbol">&#x26A0</label>
-					<span></span>
-					<label class="error_label" th:text="${error_message}"></label>
-					 -->
-				</div>
+				<div id="error_div"> </div>
 				
 				<div id="nameField" class="nameField">
-					<input type="text" name="nameForm" id="nameForm" required/>
+					<input type="text" name="name" id="nameForm" required/>
 					<label>Name</label>
 				</div>
 				
 				<div id="categoryField" class="categoryField">
-					<select name="categoryIdForm" id="categoryIdForm" required>
+					<select name="categoryId" id="categoryIdForm" required>
 						<option value="" disabled selected>Choose the parent category</option>
 						<option value="0">0 - Root</option>
 						<!-- <option></option>  -->
