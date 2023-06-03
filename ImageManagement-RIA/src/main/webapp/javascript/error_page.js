@@ -11,6 +11,7 @@
 			
 			let l = document.getElementsByClassName("logout")[0];
 			l.href = "/ImageManagement-RIA/index.html";
+			l.innerHTML = "INDEX";
 		} else {
 			document.getElementsByClassName("home")[0].addEventListener("click", (e) => {
 				e.preventDefault();
