@@ -475,29 +475,6 @@
 				self.buildSubTree(self.ul_root, c, self, true)
 			});
 
-			// execute chain of drops
-			var d_s = new Event("dragstart");
-			var d_o = new Event("dragover");
-			var dr = new Event("drop");
-			var d_e = new Event("dragend");
-
-			var temp_d_c = self.drop_chain.slice(0, self.drop_chain.length);
-			self.drop_chain = [];
-
-			if (temp_d_c.length > 0) {
-				temp_d_c.slice(0, self.drop_chain.length - 1).forEach(c => {
-					let labels = document.getElementsByClassName("categoryId");
-					let l_a = Array.prototype.slice.call(labels);
-					let src = l_a.filter(s => s.innerHTML === c[0])[0];
-					let dest = l_a.filter(s => s.innerHTML === c[1])[0];
-
-					src.dispatchEvent(d_s);
-					dest.dispatchEvent(d_o);
-					dest.dispatchEvent(dr);
-					src.dispatchEvent(d_e);
-				});
-			}
-
 			/* ROOT BUTTON */
 
 			var c_children = self.countChildrenNumber(self.tree);
@@ -599,6 +576,37 @@
 
 			self.ul_root.appendChild(f_l);
 			f_l.appendChild(f_d);
+			
+			// execute chain of drops
+			var d_s = new Event("dragstart");
+			var d_o = new Event("dragover");
+			var dr = new Event("drop");
+			var d_e = new Event("dragend");
+
+			var temp_d_c = self.drop_chain.slice(0, self.drop_chain.length);
+			self.drop_chain = [];
+
+			if (temp_d_c.length > 1) {
+				let labels = document.getElementsByClassName("categoryId");
+				let l_a = Array.prototype.slice.call(labels);
+				temp_d_c.slice(0, self.drop_chain.length - 1).forEach(c => {
+					let src = l_a.filter(s => s.innerHTML === c[0])[0];
+					let dest;
+					if (c[1] != "0") {
+						dest = l_a.filter(s => s.innerHTML === c[1])[0];
+					} else {
+						let r = document.getElementById("root");
+						dest = r.getElementsByTagName("label")[0];
+					}
+					src.dispatchEvent(d_s);
+					dest.dispatchEvent(d_o);
+					dest.dispatchEvent(dr);
+					src.dispatchEvent(d_e);
+				});
+				
+				// show SAVE button
+				document.getElementById("save_li").style.display = "";
+			}
 		}
 	}
 
