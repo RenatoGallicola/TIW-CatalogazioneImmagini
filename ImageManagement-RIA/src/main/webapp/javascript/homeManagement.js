@@ -5,7 +5,6 @@
 {
 	let handler = new PageHandler();
 	let categoryForm, categoryTree, alertBox;
-	let draggedLi;
 
 	window.addEventListener("load", () => {
 		if (sessionStorage.getItem("username") == null) {
@@ -78,10 +77,10 @@
 					var err = [];
 					var i_val = form.getElementsByTagName("input")[0].value;
 					var s_val = form.getElementsByTagName("select")[0].value;
-					var cond_n = !(i_val === null || i_val === "");
+					var cond_n = !(i_val === null || i_val === "" || /\d/.test(i_val));
 					var cond_c = /^\d+$/.test(s_val) && Number(s_val) >= 0;
 					if (!cond_n && cond_c) {
-						err[0] = "No name entered for the new category";
+						err[0] = "Invalid name entered for the new category";
 						err[1] = "true";
 						err[2] = "false";
 						self.showFormErrors(err);
@@ -156,6 +155,7 @@
 		this.ul_root = _ul;
 		this.top_c = null;
 		this.drop_chain = [];
+		this.draggedLi = null;
 
 		this.build = function() {
 			var self = this;
@@ -165,6 +165,7 @@
 					if (req.status == 200) {
 						self.top_c = JSON.parse(req.responseText);
 						self.drop_chain = [];
+						self.draggedLi = null;
 						self.restore();
 					} else if (req.status == 500) {
 						location.reload();
@@ -191,7 +192,7 @@
 			l1.innerHTML = c.id;
 			l1.draggable = true;
 			l1.addEventListener("dragstart", (e) => {
-				draggedLi = l;
+				tree.draggedLi = l;
 				tree.undroppable(l, top);
 				var w = tree.ul_root.getElementsByClassName("wrapper");
 				var wList = Array.prototype.slice.call(w);
@@ -235,7 +236,7 @@
 			l1.addEventListener("drop", (e) => {
 				var d = e.target.closest("li");
 				if (d.getElementsByTagName("label")[0].draggable) {
-					var cloneLi = draggedLi.cloneNode(true);
+					var cloneLi = tree.draggedLi.cloneNode(true);
 					cloneLi.className = "subCategory";
 					var c_li = cloneLi.getElementsByTagName("li");
 					var liList = Array.prototype.slice.call(c_li);
@@ -253,7 +254,7 @@
 						u.appendChild(cloneLi);
 					}
 
-					var src = draggedLi.getElementsByTagName("label")[0].innerHTML;
+					var src = tree.draggedLi.getElementsByTagName("label")[0].innerHTML;
 					var dest = l1.innerHTML;
 					tree.drop_chain.push([src, dest]);
 
@@ -266,7 +267,7 @@
 				}
 			});
 			l1.addEventListener("dragend", () => {
-				tree.resetDropStyle(draggedLi);
+				tree.resetDropStyle(tree.draggedLi);
 
 				// hide root destination
 				var r = document.getElementById("root");
@@ -430,7 +431,7 @@
 			// check number of immediate subcategories
 			var s_ul = li.getElementsByTagName("ul")[0];
 			var c_children = 0;
-			if (li !== draggedLi && s_ul !== undefined) {
+			if (li !== this.draggedLi && s_ul !== undefined) {
 				var all_li = s_ul.getElementsByTagName("li");
 				var all_li_list = Array.prototype.slice.call(all_li);
 				all_li_list.forEach(s => {
@@ -500,7 +501,7 @@
 						w.classList.remove("divOver");
 				});
 				r_l.addEventListener("drop", () => {
-					var cloneLi = draggedLi.cloneNode(true);
+					var cloneLi = self.draggedLi.cloneNode(true);
 					var c_li = cloneLi.getElementsByTagName("li");
 					var liList = Array.prototype.slice.call(c_li);
 					cloneLi = self.setClonedId(cloneLi, liList, -1, self.countChildrenNumber(self.tree));
@@ -511,7 +512,7 @@
 					if (c_children == 9)
 						r.remove();
 
-					var src = draggedLi.getElementsByTagName("label")[0].innerHTML;
+					var src = self.draggedLi.getElementsByTagName("label")[0].innerHTML;
 					self.drop_chain.push([src, "0"]);
 
 					// disable d&d
