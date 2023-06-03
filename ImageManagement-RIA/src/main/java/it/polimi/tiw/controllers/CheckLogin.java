@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -14,10 +13,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.servlet.annotation.MultipartConfig;
+
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 
 @WebServlet("/CheckLogin")
+@MultipartConfig
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -57,8 +59,8 @@ public class CheckLogin extends HttpServlet {
 
 		UserDAO usr = new UserDAO(connection);
 		User u = null;
-		
-		if(!bad_request) {
+
+		if (!bad_request) {
 			try {
 				u = usr.checkCredentials(usrn, pwd);
 			} catch (SQLException e) {
@@ -67,19 +69,18 @@ public class CheckLogin extends HttpServlet {
 		}
 
 		if (bad_request || u == null) {
-			
+
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Incorrect username or password");
-			
-		} else 
-		{
-			
+
+		} else {
+
 			request.getSession().setAttribute("user", u);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.getWriter().println(usrn);
-			
+
 		}
 	}
 

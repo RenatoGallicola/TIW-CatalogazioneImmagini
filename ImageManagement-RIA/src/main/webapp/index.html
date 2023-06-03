@@ -21,10 +21,10 @@
 		
 		<div id="errorBox"> </div>
 		
-		<form id="loginForm" action="#" method="POST">
-			<div class="text">
-				<div class="user">
-					<input type="text" name="username" required>
+		<form id="loginForm" action="#">
+			<div id="text_u" class="text">
+				<div id="user" class="user">
+					<input type="text" name="username" id="username" required>
 					<img src="images/user.png"/>
 					<span></span>
 					<label>Username</label>
@@ -33,16 +33,15 @@
 			
 			<div class="fieldDivider"></div>
 			
-			<div class="text">
-				<div class="password">
-					<input type="password" name="password" required>
+			<div id="text_p" class="text">
+				<div id="pwd" class="password">
+					<input type="password" name="password" id="password" required>
 					<img src="images/password.png"/>
 					<span></span>
 					<label>Password</label>
 				</div> 
 			</div>
-			<input type="submit" value="LOGIN">
-			
+			<input id="loginButton" type="submit" value="LOGIN">
 		</form>
 		
 	</div>

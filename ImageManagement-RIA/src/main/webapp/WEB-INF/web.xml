@@ -20,36 +20,32 @@
 		<param-name>dbDriver</param-name>
 		<param-value>com.mysql.cj.jdbc.Driver</param-value>
 	</context-param>
-	<welcome-file-list>
-    	<welcome-file>/index.html</welcome-file>
-  	</welcome-file-list>
+	<filter> 
+     	<filter-name>DisableCache</filter-name>
+      	<filter-class>it.polimi.tiw.filters.DisableCache</filter-class> 
+ 	</filter>
   	<filter> 
      	<filter-name>UserChecker</filter-name>
       	<filter-class>it.polimi.tiw.filters.UserChecker</filter-class> 
  	</filter>
- 	<filter> 
-     	<filter-name>ErrorChecker</filter-name>
-      	<filter-class>it.polimi.tiw.filters.ErrorChecker</filter-class> 
- 	</filter>
+ 	<filter-mapping>
+		 <filter-name>DisableCache</filter-name>
+		 <url-pattern>/home.html</url-pattern>
+	 </filter-mapping>
  	<filter-mapping> 
     	<filter-name>UserChecker</filter-name> 
+    	<url-pattern>/ChangeNameCategory</url-pattern>
     	<url-pattern>/CheckLogout</url-pattern>
     	<url-pattern>/CopySubTree</url-pattern>
     	<url-pattern>/CreateCategory</url-pattern>
-    	<url-pattern>/GoToErrorPage</url-pattern>
-    	<url-pattern>/GoToHomePage</url-pattern>
-    	<url-pattern>/SelectSubtreeToCopy</url-pattern>
-    	<url-pattern>/ChangeNameCategory</url-pattern>
- 	</filter-mapping> 
- 	<filter-mapping> 
-    	<filter-name>ErrorChecker</filter-name> 
-    	<url-pattern>/GoToErrorPage</url-pattern>
- 	</filter-mapping> 
+    	<url-pattern>/GetAllCategories</url-pattern>
+    	<url-pattern>/GetTopCategories</url-pattern>
+    	<url-pattern>/home.html</url-pattern>
+ 	</filter-mapping>
+	<welcome-file-list>
+    	<welcome-file>/index.html</welcome-file>
+  	</welcome-file-list>
  	<error-page>
-    	<error-code>404</error-code>
-    	<location>/WEB-INF/status_code_errors/error404.html</location>
-	</error-page>
-	<error-page>
-    	<location>/WEB-INF/status_code_errors/default_error.html</location>
+    	<location>/WEB-INF/default_error.html</location>
 	</error-page>
 </web-app>

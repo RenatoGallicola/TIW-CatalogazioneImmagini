@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,14 +14,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import it.polimi.tiw.beans.User;
+import com.google.gson.Gson;
 
-@WebServlet("/GoToErrorPage")
-public class GoToErrorPage extends HttpServlet {
+import it.polimi.tiw.beans.Category;
+import it.polimi.tiw.dao.CategoryDAO;
+
+@WebServlet("/GetTopCategories")
+public class GetTopCategories extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	
-    public GoToErrorPage() {
+   
+    public GetTopCategories() {
         super();
     }
     
@@ -34,28 +38,35 @@ public class GoToErrorPage extends HttpServlet {
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String error = (String)request.getAttribute("error");
+		List<Category> topCategories = null;
+		CategoryDAO cService = new CategoryDAO(connection);
 		
-		String path = "/WEB-INF/error.html";
-		ServletContext servletContext = getServletContext();
-		//final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		//ctx.setVariable("error_text", error);
-		//templateEngine.process(path, ctx, response.getWriter());
+		try {
+			topCategories = cService.findTopCategoriesAndSubtrees(-1, false);
+		}catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("An error occurred while retrieving the categories from the database");
+			return;
+		}
+		
+		String json = new Gson().toJson(topCategories);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
 	public void destroy() {
 		try {
 			if (connection != null) {
@@ -64,4 +75,5 @@ public class GoToErrorPage extends HttpServlet {
 		} catch (SQLException sqle) {
 		}
 	}
+
 }

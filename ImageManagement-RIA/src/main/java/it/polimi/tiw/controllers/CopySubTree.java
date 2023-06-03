@@ -4,22 +4,20 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import it.polimi.tiw.beans.Category;
-import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CategoryDAO;
 
 @WebServlet("/CopySubTree")
+@MultipartConfig
 public class CopySubTree extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -43,92 +41,58 @@ public class CopySubTree extends HttpServlet {
 			throw new UnavailableException("Couldn't get db connection");
 		}
 	}
-
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		String idSource = request.getParameter("idSource");
-		String idDestination = request.getParameter("idDestination");
-		int source = -1, destination = -1;
+		doPost(request, response);
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String[] s = request.getParameterValues("idSource");
+		String[] d = request.getParameterValues("idDestination");
+		
+		int[] src = null;
+		int[] dst = null;
+		int len = -1;
+		
+		Boolean bad_req = false;
+		
 		CategoryDAO cService = new CategoryDAO(connection);
-
-		String error_message = null;
-		Boolean error = false;
-
-		try {
-			source = Integer.parseInt(idSource);
-			destination = Integer.parseInt(idDestination);
-		} catch (NumberFormatException e) {
-			error = true;
-			error_message = "The category id format is invalid";
+		
+		if(s == null || s.length == 0 || d == null || d.length == 0 || s.length != d.length)
+			bad_req = true;
+		else {
+			src = new int[s.length];
+			dst = new int[d.length];
+			len = s.length;
 		}
-
-		if (!error) {
-			// Check if id_source and id_destination are valid
-			if (cService.validCategory(source) && (cService.validCategory(destination) || destination == 0)) { // destination = 0 if destination is root
-				Category cSource = cService.getSpecificCategory(source);
-
-				if (cSource != null) {
-					// Now get subParts of this category:
-					try {
-						cService.findSubparts(cSource, false, -1);
-
-						// Now check if there is space under the destination:
-						if (cService.isThereSpace(destination) != -1) {
-							// Now check if id destination is not an id of a category in this subTree:
-							if (cService.checkIdDestination(cSource, destination)) {
-								// Now copy, insert into the DB the new nodes:
-								try {
-									cService.copySubTree(cSource, destination);
-
-								} catch (SQLException e) {
-									error = true;
-									error_message = "An error occurred while copying the selected category subtree";
-								}
-
-								if(!error) {
-									// redirect to HomePage
-									String ctxpath = getServletContext().getContextPath();
-									String path = ctxpath + "/GoToHomePage";
-									response.sendRedirect(path);
-									return;
-								}
-
-							} else {
-								error = true;
-								error_message = "The chosen destination belongs to the category subtree to copy";
-							}
-						} else {
-							error = true;
-							error_message = "The limit of subcategories for the chosen destination has already been reached";
-						}
-
-					} catch (SQLException e) {
-						error = true;
-						error_message = "An error occurred while building the subcategory tree";
-					}
-				} else {
-					error = true;
-					error_message = "The chosen category to copy is non-existent";
+		
+		if(!bad_req) {
+			for(int i=0; i<len; i++) {
+				try {
+					src[i] = Integer.parseInt(s[i]);
+					dst[i] = Integer.parseInt(d[i]);
+				} catch (NumberFormatException e) {
+					bad_req = true;
 				}
-
-			} else {
-				error = true;
-				error_message = "Either the chosen category to copy or the destination is non-existent";
 			}
 		}
 		
-		if(error) {
-			String path = "/GoToErrorPage";
-			request.setAttribute("error", error_message);
-			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-			dispatcher.forward(request, response);
+		if(!bad_req) {
+			try {
+				cService.copySubTree(src, dst);
+				response.setStatus(HttpServletResponse.SC_OK);
+				return;
+			} catch (SQLException e) {
+				bad_req = true;
+			}
+		}
+		
+		if(bad_req) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("An error occurred while copying the selected category subtrees");
 		}
 	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-
+	
 	public void destroy() {
 		try {
 			if (connection != null) {
@@ -137,4 +101,5 @@ public class CopySubTree extends HttpServlet {
 		} catch (SQLException sqle) {
 		}
 	}
+
 }

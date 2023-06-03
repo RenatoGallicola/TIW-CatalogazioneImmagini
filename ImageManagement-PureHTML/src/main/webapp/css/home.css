@@ -4,7 +4,7 @@
 
 body{
 	padding: 20px 20px 20px 20px;
-	background: linear-gradient(120deg,rgb(255 233 198 / 50%),rgba(221,171,93,0.5));
+	background: linear-gradient(120deg,rgb(255 233 198 / 50%),rgb(255 233 198 / 50%));
 	font-family: "Poppins", sans-serif;
 }
 

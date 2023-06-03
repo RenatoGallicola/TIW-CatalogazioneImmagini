@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import it.polimi.tiw.beans.Category;
 import java.util.regex.Pattern;
+
+import com.mysql.cj.protocol.a.TextRowFactory;
+
 import java.util.regex.Matcher;
 
 public class CategoryDAO {
@@ -376,6 +379,7 @@ public class CategoryDAO {
 		return c;
 	}
 
+	
 	public boolean checkIdDestination(Category cat, int idDestination) {
 		boolean result = true;
 		if (cat.getId() != idDestination) {
@@ -390,12 +394,46 @@ public class CategoryDAO {
 			return false;
 	}
 
-	public void copySubTree(Category cat, int idDestination) throws SQLException {
+	public void copySubTree(int[] src, int[] dst) throws SQLException {
+		int len = src.length;
+		boolean bad_req = false;
+		
 		try {
 			connection.setAutoCommit(false);
-
-			realCopySubTree(cat, idDestination);
-
+			
+			for(int i=0; i<len && !bad_req; i++) {
+				if(validCategory(src[i]) && (validCategory(dst[i]) || dst[i] == 0)) {
+					Category c_src = getSpecificCategory(src[i]);
+					if(c_src != null) {
+						try {
+							findSubparts(c_src, false, -1);
+							if (isThereSpace(dst[i]) != -1) {
+								if(checkIdDestination(c_src, dst[i])) {
+									try {
+										realCopySubTree(c_src, dst[i]);
+									} catch (SQLException e) {
+										bad_req = true;
+									}
+								} else {
+									bad_req = true;
+								}
+							} else {
+								bad_req = true;
+							}
+						} catch (SQLException e) {
+							bad_req = true;
+						}
+					} else {
+						bad_req = true;
+					}
+				} else {
+					bad_req = true;
+				}
+			}
+			
+			if (bad_req)
+				throw new SQLException();
+			
 			connection.commit();
 		} catch (SQLException e) {
 			connection.rollback();
@@ -427,7 +465,6 @@ public class CategoryDAO {
 		try
 		{
 			connection.setAutoCommit(false);
-			
 			//Change name now:
 			realChangeName(id_cat, newName);
 			
@@ -450,7 +487,7 @@ public class CategoryDAO {
 		PreparedStatement pstatement = null;
 		try
 		{
-			pstatement = connection.prepareStatement("UPDATE image_management.category SET name = '?' WHERE id = ?");
+			pstatement = connection.prepareStatement("UPDATE image_management.category SET name = ? WHERE id = ?");
 			
 			//Set parameters in query now:
 			pstatement.setString(1, newName);
