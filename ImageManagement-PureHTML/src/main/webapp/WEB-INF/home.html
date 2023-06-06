@@ -22,11 +22,11 @@
 	
 	<div class="pageContent">
 		
-		<div class="categoryForm">
+		<div  th:class="${showForm} ? 'categoryForm' : 'hideForm'">
 		
 			<p>Complete the form to create a new category</p>
 			
-			<form action="#" th:action="@{/CreateCategory}" method="POST">
+			<form action="#" th:action="${showForm} ? '@{/CreateCategory}' : ''" method="POST">
 			
 				<div th:if="${name_error || category_error}" th:class="error_div">
 					<label class="error_symbol">&#x26A0</label>

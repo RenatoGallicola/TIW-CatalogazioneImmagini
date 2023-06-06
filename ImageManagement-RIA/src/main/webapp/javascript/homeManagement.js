@@ -27,6 +27,7 @@
 		this.nameField = _name;
 		this.categoryField = _category;
 		this.button = _submit;
+		this.backup_button = _submit;
 		this.error = _error;
 
 		this.prepare = function() {
@@ -114,6 +115,12 @@
 			});
 		};
 
+		this.resetButton = function() {
+			this.button = document.getElementById("submitForm");
+			this.button.parentNode.replaceChild(this.backup_button, this.button);
+			this.button = this.backup_button;
+		}
+
 		this.showFormErrors = function(e) {
 			this.form.reset();
 
@@ -198,6 +205,13 @@
 				var wList = Array.prototype.slice.call(w);
 				wList.forEach(w_e => w_e.classList.remove("divOver"));
 
+				// disable form
+				var b = document.getElementById("submitForm");
+				var cloned_b = b.cloneNode(true);
+				b.parentNode.replaceChild(cloned_b, b);
+				cloned_b.classList.add("hideButton");
+				document.getElementsByClassName("categoryForm")[0].classList.add("hideForm");
+
 				// disable change name function
 				var c_n = document.getElementsByClassName("categoryName");
 				var c_n_list = Array.prototype.slice.call(c_n);
@@ -273,6 +287,13 @@
 				var r = document.getElementById("root");
 				if (r !== null)
 					r.style.display = "none";
+
+				// check if form can be enabled
+				if (tree.drop_chain.length == 0) {
+					document.getElementsByClassName("categoryForm")[0].classList.remove("hideForm");
+					categoryForm.resetButton();
+					categoryForm.prepare();
+				}
 
 				// check if change name function can be enabled
 				if (tree.drop_chain.length == 0) {
@@ -549,6 +570,8 @@
 					if (req.readyState == XMLHttpRequest.DONE) {
 						switch (req.status) {
 							case 200:
+								document.getElementsByClassName("categoryForm")[0].classList.remove("hideForm");
+								categoryForm.resetButton();
 								handler.refresh();
 								break;
 							case 400:
@@ -577,7 +600,7 @@
 
 			self.ul_root.appendChild(f_l);
 			f_l.appendChild(f_d);
-			
+
 			// execute chain of drops
 			var d_s = new Event("dragstart");
 			var d_o = new Event("dragover");
@@ -586,6 +609,13 @@
 
 			var temp_d_c = self.drop_chain.slice(0, self.drop_chain.length);
 			self.drop_chain = [];
+
+			// check if form can be enabled
+			if (temp_d_c.length == 1) {
+				document.getElementsByClassName("categoryForm")[0].classList.remove("hideForm");
+				categoryForm.resetButton();
+				categoryForm.prepare();
+			}
 
 			if (temp_d_c.length > 1) {
 				let labels = document.getElementsByClassName("categoryId");
@@ -604,7 +634,7 @@
 					dest.dispatchEvent(dr);
 					src.dispatchEvent(d_e);
 				});
-				
+
 				// show SAVE button
 				document.getElementById("save_li").style.display = "";
 			}
