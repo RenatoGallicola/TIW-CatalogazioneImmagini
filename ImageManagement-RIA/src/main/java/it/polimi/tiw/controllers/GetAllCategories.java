@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,16 +14,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/GoToIndex")
-public class GoToIndex extends HttpServlet {
+import com.google.gson.Gson;
+
+import it.polimi.tiw.beans.Category;
+import it.polimi.tiw.dao.CategoryDAO;
+
+@WebServlet("/GetAllCategories")
+public class GetAllCategories extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-
-	public GoToIndex() {
-		super();
-	}
-
-	public void init() throws ServletException {
+     
+    public GetAllCategories() {
+        super();
+    }
+    
+    public void init() throws ServletException {
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -32,33 +38,35 @@ public class GoToIndex extends HttpServlet {
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 			throw new UnavailableException("Can't load database driver");
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new UnavailableException("Couldn't get db connection");
 		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String path = "/WEB-INF/index.html";
-		ServletContext servletContext = getServletContext();
-		/*
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		List<Category> allCategories = null;
+		CategoryDAO cService = new CategoryDAO(connection);
 		
-		if(request.getAttribute("login_error") != null)
-			ctx.setVariable("loginError", request.getAttribute("login_error"));
-		else
-			ctx.setVariable("loginError", false); // login page should not show errors when loaded for the first time
+		try {
+			allCategories = cService.findAllCategories();
+		}catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("An error occurred while retrieving the categories from the database");
+			return;
+		}
 		
-		templateEngine.process(path, ctx, response.getWriter());
-		*/
+		String json = new Gson().toJson(allCategories);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
 	public void destroy() {
 		try {
 			if (connection != null) {
@@ -67,4 +75,5 @@ public class GoToIndex extends HttpServlet {
 		} catch (SQLException sqle) {
 		}
 	}
+
 }

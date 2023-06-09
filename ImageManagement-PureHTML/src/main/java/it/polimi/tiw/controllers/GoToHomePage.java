@@ -104,6 +104,7 @@ public class GoToHomePage extends HttpServlet {
 		ctx.setVariable("topCategories", topCategories);
 		ctx.setVariable("username", username);
 		ctx.setVariable("showCopy", true); // show 'copy' button beside each category
+		ctx.setVariable("showForm", true); // enable form
 		
 		if(request.getAttribute("error_message") != null)
 			ctx.setVariable("error_message", request.getAttribute("error_message"));

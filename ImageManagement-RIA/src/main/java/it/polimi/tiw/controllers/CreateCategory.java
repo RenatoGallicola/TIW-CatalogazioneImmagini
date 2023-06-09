@@ -5,27 +5,30 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import it.polimi.tiw.dao.CategoryDAO;
 
 @WebServlet("/CreateCategory")
+@MultipartConfig
 public class CreateCategory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-
-	public CreateCategory() {
-		super();
-	}
-
-	public void init() throws ServletException {
+  
+    public CreateCategory() {
+        super();
+    }
+    
+    public void init() throws ServletException {
 		try {
 			ServletContext context = getServletContext();
 			String driver = context.getInitParameter("dbDriver");
@@ -50,11 +53,11 @@ public class CreateCategory extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = null;
 		int f_id = -1;
-		boolean badRequest = false, name_error = false, category_error = false;
+		Boolean badRequest = false, name_error = false, category_error = false;
 		String error_message = null;
 		
 		try {
-			name = request.getParameter("name");
+			name = request.getParameter("nameForm");
 			if(name.isEmpty() || name.isBlank()) {
 				badRequest = true;
 				name_error = true;
@@ -68,7 +71,7 @@ public class CreateCategory extends HttpServlet {
 		
 		if (!badRequest) {
 			try {
-				f_id = Integer.parseInt(request.getParameter("categoryId"));
+				f_id = Integer.parseInt(request.getParameter("categoryIdForm"));
 				if (f_id < 0) {
 					badRequest = true;
 					category_error = true;
@@ -94,21 +97,21 @@ public class CreateCategory extends HttpServlet {
 		}
 		
 		if(badRequest) {
-			request.setAttribute("error_message", error_message);
-			request.setAttribute("name_error", name_error);
-			request.setAttribute("category_error", category_error);
+			String[] res = new String[3]; 
+			res[0] = error_message;
+			res[1] = name_error.toString();
+			res[2] = category_error.toString();
 			
-			String path = "/GoToHomePage";
-			RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-			dispatcher.forward(request, response);
+			String json = new Gson().toJson(res);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);
 		} else {
-			String ctxpath = getServletContext().getContextPath();
-			String path = ctxpath + "/GoToHomePage";
-			response.sendRedirect(path);
+			response.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
 
-	@Override
 	public void destroy() {
 		if (connection != null) {
 			try {
@@ -118,4 +121,5 @@ public class CreateCategory extends HttpServlet {
 			}
 		}
 	}
+
 }

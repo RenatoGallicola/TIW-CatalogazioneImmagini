@@ -4,8 +4,10 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Home - Image Management</title>
-	<link rel="stylesheet" href="../css/home.css"/>
+	<link rel="stylesheet" href="css/home.css"/>
 	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
+	<script src="javascript/homeManagement.js" charset="utf-8" defer></script>
+	<script src="javascript/utils.js" charset="utf-8" defer></script>
 </head>
 
 <body>
@@ -14,7 +16,7 @@
 		
 		<label id="username"></label>
 		<a href="CheckLogout">
-			<img src="/ImageManagement-PureHTML/images/user.png"/>
+			<img src="images/user.png"/>
 			<div class="logout">LOGOUT</div>			
 		</a>
 		
@@ -28,40 +30,24 @@
 			
 			<form action="#" id="createCategory">
 			
-				<div id="error_div">
-					<!--
-					<label class="error_symbol">&#x26A0</label>
-					<span></span>
-					<label class="error_label" th:text="${error_message}"></label>
-					 -->
-				</div>
+				<div id="error_div"></div>
 				
-				<div id="nameField" class="nameField">
+				<div id="nameField">
 					<input type="text" name="nameForm" id="nameForm" required/>
 					<label>Name</label>
 				</div>
 				
-				<div id="categoryField" class="categoryField">
-					<select name="categoryIdForm" id="categoryIdForm" required>
-						<option value="" disabled selected>Choose the parent category</option>
-						<option value="0">0 - Root</option>
-						<!-- <option></option>  -->
-					</select>
+				<div id="categoryField">
+					<select name="categoryIdForm" id="categoryIdForm" required></select>
 				</div>
 				
-				<input id="submitForm" type="submit" value="CREATE">
+				<input type="button" id="submitForm" value="CREATE">
 			
 			</form>
 		</div>
 		
-		<div class="treeDiv">
-			<ul id="categoryTree" class="categoryTree">
-				
-				<!-- <li></li>  -->
-				
-				<!-- <li><div class="treeFooter"></div></li> -->
-				
-			</ul>
+		<div id="treeDiv" class="treeDiv">
+			<ul id="categoryTree" class="categoryTree"></ul>
 		</div>
 	</div>
 	

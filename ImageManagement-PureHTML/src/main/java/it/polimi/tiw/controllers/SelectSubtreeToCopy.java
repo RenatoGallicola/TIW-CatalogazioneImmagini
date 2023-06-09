@@ -131,6 +131,7 @@ public class SelectSubtreeToCopy extends HttpServlet {
 		ctx.setVariable("username", username);
 		ctx.setVariable("showCopy", false); // show 'copy here' button beside certain categories only
 		ctx.setVariable("idSource", int_source); // id of the subtree root to copy
+		ctx.setVariable("showForm", false); // disable form
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
