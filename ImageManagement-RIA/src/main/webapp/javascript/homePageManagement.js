@@ -1,6 +1,7 @@
 {
 	
 	let form;
+	let tree;
 	let pageOrchestrator = new PageOrchestrator(); // main controller
 	
 	
@@ -168,10 +169,79 @@
 	//end form constructor
 	}
 	
-	/*function tree()
+	function Tree(_treeDivObj)
 	{
 		
-	}*/
+		this.treeDivObj = _treeDivObj;
+		var self = this;
+		
+		
+		//Get all categories and subtrees from server
+		this.show = function(){
+			
+			 makeCall("GET", 'GetTree', null, function(x) {
+					 if (x.readyState == XMLHttpRequest.DONE)
+					 {
+						 switch (x.status)
+						 {
+							 case 200: //ok
+								 var categories = JSON.parse(x.responseText);
+								 if(categories.length != 0)
+								 {
+									 //self.treeDivObj.className = "treeDiv";
+									 self.update(categories, self.treeDivObj);
+									 //alert(categories[0].id);
+								 }
+								 else
+								 {
+									 alert("error download categories and subtrees");
+								 }
+							 	break;
+							 	
+							 case 400: //bad request
+							 	alert("bad request during downloading categories");
+							 	break;
+						 }
+					 }
+				 })
+				 
+		//end show function
+		}
+		
+		
+		//Update UI with categories got from server
+		this.update = function(categories, fatherTag){
+			
+			var ulTag;
+			//var self = this;
+			if(fatherTag!== null && categories!== null && categories!== undefined)
+			{
+				//Create tag <ul>
+				ulTag = document.createElement('ul');
+				fatherTag.appendChild(ulTag);
+				
+				//if(fatherTag === this.treeDivObj)
+				//{
+					//ulTag.className = "categoryTree";
+				//}	
+				
+				//For each top Category create a subTree:
+				categories.forEach(function(category)
+				{
+					//insert now list items:
+					var liTag = document.createElement('li');
+					ulTag.appendChild(liTag);
+					
+					//liTag.className = "subCategory";
+					liTag.appendChild(document.createTextNode(category.id +" - "  + category.name));
+					
+					self.update(category.subCategories, liTag);
+				});
+			}
+			
+		//end update function
+		}
+	}
 	
 	
 	
@@ -186,12 +256,17 @@
 				 document.getElementById("categoryIdForm"),
 				 document.getElementById("submitForm")
 			 );
+			 
+			 tree = new Tree(
+				 document.getElementById("treeDivObj")
+				 );
 		 }
 		 
 		 
 		 this.refresh = function()
 		 {
 			 form.show();
+			 tree.show();
 		 }
 	 }
 }
