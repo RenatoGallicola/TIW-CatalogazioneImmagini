@@ -4,7 +4,7 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Error - Image Management</title>
-	<link rel="stylesheet" href="/ImageManagement-PureHTML/css/error.css" th:href="@{/ImageManagement-PureHTML/css/error.css}">
+	<link rel="stylesheet" href="/ImageManagement-PureHTML/css/error.css" th:href="/ImageManagement-PureHTML/css/error.css">
 	<link rel="icon" type="image/x-icon" href="/ImageManagement-PureHTML/images/favicon.ico">
 </head>
 
@@ -26,8 +26,8 @@
 		</div>
 
 		<div class = "button">
-			<a th:href="@{/ImageManagement-PureHTML/GoToHomePage}" class="home">HOME PAGE</a>
-			<a th:href="@{/ImageManagement-PureHTML/CheckLogout}" class="logout">LOG OUT</a>
+			<a href="/ImageManagement-PureHTML/GoToHomePage" class="home">HOME PAGE</a>
+			<a href="/ImageManagement-PureHTML/CheckLogout" class="logout">LOG OUT</a>
 		</div>
 
 	</div>
