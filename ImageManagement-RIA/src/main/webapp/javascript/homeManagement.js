@@ -534,7 +534,7 @@
 						w.classList.remove("divOver");
 				});
 				r_l.addEventListener("drop", () => {
-					if (tree.draggedLi !== null) {
+					if (self.draggedLi !== null) {
 						var cloneLi = self.draggedLi.cloneNode(true);
 						var c_li = cloneLi.getElementsByTagName("li");
 						var liList = Array.prototype.slice.call(c_li);
